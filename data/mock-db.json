@@ -1,0 +1,55 @@
+{
+  "transactions": [
+    {
+      "id": "13de3cdd-9890-4dfb-bad9-b21910432aad",
+      "productId": "premium-plan",
+      "amount": 129,
+      "currency": "USD",
+      "paymentStatus": "success",
+      "qrId": "af5af617-a0c6-4858-8fb8-647efae6232d",
+      "createdAt": "2026-05-07T14:51:02.460Z",
+      "updatedAt": "2026-05-07T14:51:03.594Z"
+    },
+    {
+      "id": "ff937114-51bd-45eb-8f68-d61b0b86fd8d",
+      "productId": "full-retreat",
+      "amount": 79,
+      "currency": "USD",
+      "paymentStatus": "success",
+      "qrId": "0b805e75-48af-4fe8-823c-600310e0475f",
+      "createdAt": "2026-05-07T14:47:59.046Z",
+      "updatedAt": "2026-05-07T14:48:00.180Z"
+    }
+  ],
+  "qrRecords": [
+    {
+      "id": "af5af617-a0c6-4858-8fb8-647efae6232d",
+      "transactionId": "13de3cdd-9890-4dfb-bad9-b21910432aad",
+      "qrUrl": "http://localhost:3000/qr/af5af617-a0c6-4858-8fb8-647efae6232d",
+      "payload": "{\"transactionId\":\"13de3cdd-9890-4dfb-bad9-b21910432aad\",\"productId\":\"premium-plan\",\"productName\":\"Premium Monthly Plan\",\"amount\":129,\"currency\":\"USD\",\"paymentStatus\":\"success\",\"createdAt\":\"2026-05-07T14:51:02.460Z\"}",
+      "decisionStatus": "accepted",
+      "decisionAt": "2026-05-07T14:51:52.248Z",
+      "createdAt": "2026-05-07T14:51:03.587Z",
+      "updatedAt": "2026-05-07T14:51:52.248Z"
+    },
+    {
+      "id": "0b805e75-48af-4fe8-823c-600310e0475f",
+      "transactionId": "ff937114-51bd-45eb-8f68-d61b0b86fd8d",
+      "qrUrl": "http://localhost:3000/qr/0b805e75-48af-4fe8-823c-600310e0475f",
+      "payload": "{\"transactionId\":\"ff937114-51bd-45eb-8f68-d61b0b86fd8d\",\"productId\":\"full-retreat\",\"productName\":\"Weekend Retreat\",\"amount\":79,\"currency\":\"USD\",\"paymentStatus\":\"success\",\"createdAt\":\"2026-05-07T14:47:59.046Z\"}",
+      "decisionStatus": "accepted",
+      "decisionAt": "2026-05-07T14:49:40.877Z",
+      "createdAt": "2026-05-07T14:48:00.171Z",
+      "updatedAt": "2026-05-07T14:49:40.877Z"
+    }
+  ],
+  "emailLogs": [
+    {
+      "id": "fa5ce946-2727-4125-bc8d-79312f34b4fc",
+      "to": "d@d.dddd",
+      "qrId": "af5af617-a0c6-4858-8fb8-647efae6232d",
+      "status": "sent",
+      "createdAt": "2026-05-07T14:51:27.155Z"
+    }
+  ]
+}
