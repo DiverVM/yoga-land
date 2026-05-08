@@ -1,13 +1,14 @@
 import { and, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { db } from "@/lib/db";
-import { emailLogs, qrRecords, transactions } from "@/lib/db/schema";
+import { emailLogs, qrRecords, transactions, users } from "@/lib/db/schema";
 import type {
   DecisionStatus,
   EmailLog,
   PaymentStatus,
   QrRecord,
   Transaction,
+  User,
 } from "@/lib/types";
 
 function nowIso() {
@@ -197,4 +198,15 @@ export async function createEmailLog(
 
 export async function listEmailLogs(): Promise<EmailLog[]> {
   return (await db.select().from(emailLogs).all()) as EmailLog[];
+}
+
+// ─── Users ───────────────────────────────────────────────────────────────────
+
+export async function getUserByLogin(login: string): Promise<User | null> {
+  const rows = await db
+    .select()
+    .from(users)
+    .where(eq(users.login, login))
+    .all();
+  return (rows[0] as User) ?? null;
 }

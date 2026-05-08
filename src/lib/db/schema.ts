@@ -44,3 +44,11 @@ export const emailLogs = sqliteTable(
   },
   (table) => [index("email_logs_qr_id_idx").on(table.qrId)],
 );
+
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey(),
+  login: text("login").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role", { enum: ["admin"] }).notNull(),
+  createdAt: text("created_at").notNull(),
+});

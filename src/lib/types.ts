@@ -47,6 +47,14 @@ export type MockDbSchema = {
   emailLogs: EmailLog[];
 };
 
+export type User = {
+  id: string;
+  login: string;
+  passwordHash: string;
+  role: "admin";
+  createdAt: string;
+};
+
 export type ErrorResponse = {
   error: string;
   details?: string;

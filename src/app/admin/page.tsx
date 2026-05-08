@@ -4,6 +4,7 @@ import {
   listQrRecords,
   listTransactions,
 } from "@/lib/repositories";
+import { LogoutButton } from "@/components/logout-button";
 
 export default async function AdminPage() {
   const [transactions, qrRecords, emailLogs] = await Promise.all([
@@ -28,6 +29,7 @@ export default async function AdminPage() {
           >
             Back to landing
           </Link>
+          <LogoutButton />
         </header>
 
         <section className="space-y-3 rounded-2xl border border-stone-800 bg-stone-900 p-4">
