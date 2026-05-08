@@ -16,7 +16,7 @@ Mocked payment-to-QR flow built with Next.js App Router and TypeScript.
 - Public QR details page with decoded payload.
 - QR accept/decline actions that update persistent state.
 - Admin/debug page to inspect transactions, QR records, and email logs.
-- JSON file persistence in `data/mock-db.json`.
+- SQLite-compatible persistence via Drizzle (`DATABASE_URL`, optional `DATABASE_AUTH_TOKEN`).
 - CRUD API for transactions and QR records.
 
 ## Tech stack
@@ -24,6 +24,7 @@ Mocked payment-to-QR flow built with Next.js App Router and TypeScript.
 - Next.js 16 App Router
 - TypeScript
 - Tailwind CSS
+- Drizzle ORM + SQLite/libSQL (Turso-ready)
 - `qrcode` for QR generation
 - `jspdf` for PDF export
 
@@ -48,6 +49,17 @@ Useful checks:
 ```bash
 npm run lint
 npm run build
+```
+
+Environment variables:
+
+```bash
+# local file mode
+DATABASE_URL=file:./data/app.db
+
+# hosted libSQL/Turso mode
+# DATABASE_URL=libsql://<your-db>.turso.io
+# DATABASE_AUTH_TOKEN=<your-token>
 ```
 
 ## User flow
@@ -208,11 +220,11 @@ Request:
 - `GET /api/admin/records`
   - Aggregated `transactions`, `qrRecords`, and `emailLogs`.
 
-## Mock database
+## Database
 
-- File path: `data/mock-db.json`
-- Initialized automatically when missing.
-- Data persists between reloads and local restarts.
+- Local mode: `DATABASE_URL=file:./data/app.db`
+- Hosted mode (recommended for Vercel): `DATABASE_URL=libsql://...` and `DATABASE_AUTH_TOKEN=...`
+- Schema is managed in `src/lib/db/schema.ts` and migrations are in `drizzle/`.
 
 ## Decisions
 

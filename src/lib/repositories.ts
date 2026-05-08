@@ -17,13 +17,13 @@ function nowIso() {
 // ─── Transactions ────────────────────────────────────────────────────────────
 
 export async function listTransactions(): Promise<Transaction[]> {
-  return db.select().from(transactions).all() as Transaction[];
+  return (await db.select().from(transactions).all()) as Transaction[];
 }
 
 export async function getTransactionById(
   id: string,
 ): Promise<Transaction | null> {
-  const rows = db
+  const rows = await db
     .select()
     .from(transactions)
     .where(eq(transactions.id, id))
@@ -54,7 +54,7 @@ export async function createTransaction(
     updatedAt: timestamp,
   };
 
-  db.insert(transactions).values(transaction).run();
+  await db.insert(transactions).values(transaction).run();
   return transaction;
 }
 
@@ -69,7 +69,8 @@ export async function updateTransaction(
   id: string,
   input: UpdateTransactionInput,
 ): Promise<Transaction | null> {
-  db.update(transactions)
+  await db
+    .update(transactions)
     .set({ ...input, updatedAt: nowIso() })
     .where(eq(transactions.id, id))
     .run();
@@ -78,18 +79,25 @@ export async function updateTransaction(
 }
 
 export async function deleteTransaction(id: string): Promise<boolean> {
-  const result = db.delete(transactions).where(eq(transactions.id, id)).run();
-  return result.changes > 0;
+  const result = await db
+    .delete(transactions)
+    .where(eq(transactions.id, id))
+    .run();
+  return result.rowsAffected > 0;
 }
 
 // ─── QR Records ─────────────────────────────────────────────────────────────
 
 export async function listQrRecords(): Promise<QrRecord[]> {
-  return db.select().from(qrRecords).all() as QrRecord[];
+  return (await db.select().from(qrRecords).all()) as QrRecord[];
 }
 
 export async function getQrRecordById(id: string): Promise<QrRecord | null> {
-  const rows = db.select().from(qrRecords).where(eq(qrRecords.id, id)).all();
+  const rows = await db
+    .select()
+    .from(qrRecords)
+    .where(eq(qrRecords.id, id))
+    .all();
   return (rows[0] as QrRecord) ?? null;
 }
 
@@ -115,7 +123,7 @@ export async function createQrRecord(
     updatedAt: timestamp,
   };
 
-  db.insert(qrRecords).values(record).run();
+  await db.insert(qrRecords).values(record).run();
   return record;
 }
 
@@ -127,7 +135,8 @@ export async function updateQrRecord(
   id: string,
   input: UpdateQrInput,
 ): Promise<QrRecord | null> {
-  db.update(qrRecords)
+  await db
+    .update(qrRecords)
     .set({ ...input, updatedAt: nowIso() })
     .where(eq(qrRecords.id, id))
     .run();
@@ -136,8 +145,8 @@ export async function updateQrRecord(
 }
 
 export async function deleteQrRecord(id: string): Promise<boolean> {
-  const result = db.delete(qrRecords).where(eq(qrRecords.id, id)).run();
-  return result.changes > 0;
+  const result = await db.delete(qrRecords).where(eq(qrRecords.id, id)).run();
+  return result.rowsAffected > 0;
 }
 
 export async function decideQrRecord(
@@ -145,13 +154,13 @@ export async function decideQrRecord(
   decision: Extract<DecisionStatus, "accepted" | "declined">,
 ): Promise<{ record: QrRecord | null; conflict: boolean }> {
   const now = nowIso();
-  const result = db
+  const result = await db
     .update(qrRecords)
     .set({ decisionStatus: decision, decisionAt: now, updatedAt: now })
     .where(and(eq(qrRecords.id, id), eq(qrRecords.decisionStatus, "pending")))
     .run();
 
-  if (result.changes === 0) {
+  if (result.rowsAffected === 0) {
     const existing = await getQrRecordById(id);
     if (!existing) {
       return { record: null, conflict: false };
@@ -182,10 +191,10 @@ export async function createEmailLog(
     createdAt: nowIso(),
   };
 
-  db.insert(emailLogs).values(emailLog).run();
+  await db.insert(emailLogs).values(emailLog).run();
   return emailLog;
 }
 
 export async function listEmailLogs(): Promise<EmailLog[]> {
-  return db.select().from(emailLogs).all() as EmailLog[];
+  return (await db.select().from(emailLogs).all()) as EmailLog[];
 }
