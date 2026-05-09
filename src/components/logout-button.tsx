@@ -7,7 +7,9 @@ export function LogoutButton() {
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
+    window.dispatchEvent(new Event("auth-changed"));
     router.push("/");
+    router.refresh();
   }
 
   return (

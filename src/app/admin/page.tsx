@@ -13,24 +13,24 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed_0%,_#ffedd5_35%,_#fed7aa_70%,_#fdba74_100%)] px-4 py-10 text-stone-900">
+    <div className="relative flex min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#fff7ed_0%,#ffedd5_35%,#fed7aa_70%,#fdba74_100%)] px-4 py-24 text-stone-900">
       <div className="pointer-events-none absolute -left-20 top-12 h-60 w-60 rounded-full bg-orange-300/35 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 bottom-8 h-72 w-72 rounded-full bg-amber-400/35 blur-3xl" />
       <main className="mx-auto w-full max-w-6xl space-y-6">
         <header className="relative rounded-3xl border border-stone-800/10 bg-white/80 p-6 shadow-2xl shadow-orange-950/20 backdrop-blur md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-stone-900">Admin Debug</h1>
-            <p className="text-sm text-stone-600">
-              Persisted records from your database.
-            </p>
-          </div>
-          <Link
-            href="/"
-            className="rounded-full border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
-          >
-            Back to landing
-          </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-stone-900">Admin Debug</h1>
+              <p className="text-sm text-stone-600">
+                Persisted records from your database.
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="rounded-full border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
+            >
+              Back to landing
+            </Link>
           </div>
         </header>
 

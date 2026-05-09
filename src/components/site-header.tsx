@@ -32,13 +32,20 @@ export function SiteHeader() {
 
     void loadMe();
 
+    function handleAuthChanged() {
+      void loadMe();
+    }
+
+    window.addEventListener("auth-changed", handleAuthChanged);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("auth-changed", handleAuthChanged);
     };
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-900/10 bg-white/75 backdrop-blur">
+    <header className="fixed inset-x-0 top-0 z-40 border-b border-stone-900/10 bg-white backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
         <Link href="/" className="font-semibold tracking-tight text-stone-900">
           Yoga Land
