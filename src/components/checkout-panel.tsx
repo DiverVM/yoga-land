@@ -21,7 +21,7 @@ type CheckoutPanelProps = {
 export function CheckoutPanel({ products }: CheckoutPanelProps) {
   const router = useRouter();
   const [productId, setProductId] = useState(products[0]?.id ?? "");
-  const [mode, setMode] = useState<"auto" | "success" | "failed">("auto");
+  const [mode, setMode] = useState<"auto" | "success" | "failed">("success");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paymentFailure, setPaymentFailure] = useState<{
