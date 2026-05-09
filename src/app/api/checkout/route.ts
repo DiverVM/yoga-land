@@ -15,7 +15,7 @@ import {
   createTransaction,
   updateTransaction,
 } from "@/lib/repositories";
-import { validateProductId } from "@/lib/validation";
+import { validateProductId } from "@/lib/validation.server";
 
 type CheckoutBody = {
   productId?: string;

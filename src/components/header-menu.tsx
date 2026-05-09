@@ -51,6 +51,9 @@ export function HeaderMenu({ isAdmin }: HeaderMenuProps) {
             <Link href="/scan" className="btn-secondary px-3 py-1.5">
               {t("header.scanQr")}
             </Link>
+            <Link href="/bulk-send" className="btn-secondary px-3 py-1.5">
+              {t("header.bulkSend")}
+            </Link>
             <Link href="/admin" className="btn-secondary px-3 py-1.5">
               {t("header.admin")}
             </Link>
@@ -77,6 +80,13 @@ export function HeaderMenu({ isAdmin }: HeaderMenuProps) {
                   onClick={() => setIsOpen(false)}
                 >
                   {t("header.scanQr")}
+                </Link>
+                <Link
+                  href="/bulk-send"
+                  className="btn-secondary px-3 py-2 text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {t("header.bulkSend")}
                 </Link>
                 <Link
                   href="/admin"

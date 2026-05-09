@@ -4,7 +4,7 @@ import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
 // Pages and API routes that require an admin session.
 // All other paths are guest-accessible (landing, checkout, payment, auth).
-const ADMIN_PAGE_PREFIXES = ["/admin", "/scan", "/qr"];
+const ADMIN_PAGE_PREFIXES = ["/admin", "/scan", "/qr", "/bulk-send"];
 const ADMIN_API_PREFIXES = [
   "/api/admin",
   "/api/qr-records",
@@ -40,6 +40,7 @@ export const config = {
     "/admin/:path*",
     "/scan/:path*",
     "/qr/:path*",
+    "/bulk-send/:path*",
     "/api/admin/:path*",
     "/api/qr-records/:path*",
     "/api/transactions/:path*",

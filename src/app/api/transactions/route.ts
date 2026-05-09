@@ -1,6 +1,7 @@
 import { fail, ok, parseJsonBody } from "@/lib/api";
 import { createTransaction, listTransactions } from "@/lib/repositories";
-import { isPaymentStatus, validateProductId } from "@/lib/validation";
+import { isPaymentStatus } from "@/lib/validation";
+import { validateProductId } from "@/lib/validation.server";
 
 type CreateTransactionBody = {
   productId?: string;
