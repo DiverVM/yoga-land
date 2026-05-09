@@ -1,6 +1,7 @@
 import { ok } from "@/lib/api";
-import { MOCK_PRODUCTS } from "@/lib/products";
+import { listProducts } from "@/lib/repositories";
 
 export async function GET() {
-  return ok({ products: MOCK_PRODUCTS });
+  const products = await listProducts();
+  return ok({ products });
 }

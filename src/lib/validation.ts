@@ -1,4 +1,4 @@
-import { getProductById } from "@/lib/products";
+import { getProductById } from "@/lib/repositories";
 import type { DecisionStatus, PaymentStatus, Product } from "@/lib/types";
 
 export function isNonEmptyString(value: unknown): value is string {
@@ -23,7 +23,7 @@ export function isDecisionStatus(value: unknown): value is DecisionStatus {
   );
 }
 
-export function validateProductId(productId: unknown) {
+export async function validateProductId(productId: unknown) {
   if (!isNonEmptyString(productId)) {
     return {
       valid: false as const,
@@ -31,7 +31,7 @@ export function validateProductId(productId: unknown) {
     };
   }
 
-  const product = getProductById(productId);
+  const product = await getProductById(productId);
   if (!product) {
     return {
       valid: false as const,

@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MOCK_PRODUCTS } from "@/lib/products";
+import type { Product } from "@/lib/types";
 
 type CheckoutResponse = {
   status: "success" | "failed";
@@ -11,19 +11,33 @@ type CheckoutResponse = {
 
 export function CheckoutPanel() {
   const router = useRouter();
-  const [productId, setProductId] = useState(MOCK_PRODUCTS[0]?.id ?? "");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productId, setProductId] = useState("");
   const [mode, setMode] = useState<"auto" | "success" | "failed">("auto");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data: { products?: Product[] }) => {
+        const list = data.products ?? [];
+        setProducts(list);
+        setProductId(list[0]?.id ?? "");
+      })
+      .catch(() => {})
+      .finally(() => setProductsLoading(false));
+  }, []);
+
   const selectedProduct = useMemo(
-    () => MOCK_PRODUCTS.find((product) => product.id === productId),
-    [productId],
+    () => products.find((p) => p.id === productId),
+    [products, productId],
   );
 
   async function handlePay() {
     if (!selectedProduct) {
-      setError("Please select a product.");
+      setError("Please select a course.");
       return;
     }
 
@@ -66,30 +80,37 @@ export function CheckoutPanel() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-2xl font-bold">Start Mock Checkout</h2>
+        <h2 className="text-2xl font-bold">Buy a Course</h2>
         <p className="mt-1 text-sm text-stone-600">
-          This step simulates a payment provider and redirects to success or
-          failure result page.
+          Select a course below and complete your purchase to receive a QR code.
         </p>
       </div>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-stone-700">Product</span>
-        <select
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
-          value={productId}
-          onChange={(event) => setProductId(event.target.value)}
-        >
-          {MOCK_PRODUCTS.map((product) => (
-            <option key={product.id} value={product.id}>
-              {product.name} - ${product.price} {product.currency}
-            </option>
-          ))}
-        </select>
+        <span className="text-sm font-medium text-stone-700">Course</span>
+        {productsLoading ? (
+          <div className="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-400">
+            Loading courses…
+          </div>
+        ) : (
+          <select
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
+            value={productId}
+            onChange={(event) => setProductId(event.target.value)}
+          >
+            {products.map((product) => (
+              <option key={product.id} value={product.id}>
+                {product.name} — ${product.price} {product.currency}
+              </option>
+            ))}
+          </select>
+        )}
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-stone-700">Mock Result</span>
+        <span className="text-sm font-medium text-stone-700">
+          Payment simulation
+        </span>
         <select
           className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
           value={mode}
@@ -97,15 +118,18 @@ export function CheckoutPanel() {
             setMode(event.target.value as "auto" | "success" | "failed")
           }
         >
-          <option value="auto">Auto (random)</option>
-          <option value="success">Force success</option>
-          <option value="failed">Force failed</option>
+          <option value="auto">Auto</option>
+          <option value="success">Success</option>
+          <option value="failed">Failed</option>
         </select>
       </label>
 
       {selectedProduct ? (
         <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-950">
-          Total: <span className="font-bold">${selectedProduct.price}</span>{" "}
+          <p className="mb-1 text-stone-600">{selectedProduct.description}</p>
+          Total: <span className="font-bold">
+            ${selectedProduct.price}
+          </span>{" "}
           {selectedProduct.currency}
         </div>
       ) : null}
@@ -119,10 +143,10 @@ export function CheckoutPanel() {
       <button
         type="button"
         onClick={handlePay}
-        disabled={isLoading}
+        disabled={isLoading || productsLoading}
         className="w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isLoading ? "Processing mock payment..." : "Pay now"}
+        {isLoading ? "Processing…" : "Pay now"}
       </button>
     </div>
   );

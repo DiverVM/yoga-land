@@ -7,8 +7,19 @@ export type DecisionStatus = "pending" | "accepted" | "declined";
 export type Product = {
   id: string;
   name: string;
+  description: string;
   price: number;
   currency: Currency;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PaginatedResult<T> = {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
 };
 
 export type Transaction = {

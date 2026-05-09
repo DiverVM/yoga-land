@@ -158,6 +158,12 @@ export function QrScanner() {
       });
     } finally {
       setProcessing(false);
+      // Resume scanning automatically after a brief cooldown so the same
+      // code isn't immediately re-detected before the camera moves.
+      setTimeout(() => {
+        activeRef.current = true;
+        requestAnimationFrame(tickRef.current);
+      }, 2000);
     }
   }
 
@@ -188,8 +194,8 @@ export function QrScanner() {
       });
 
       if (code) {
-        activeRef.current = false; // pause until the user taps "Scan again"
-        handleDetect(code.data);
+        activeRef.current = false; // pause during processing
+        void handleDetect(code.data);
         return;
       }
 

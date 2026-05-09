@@ -1,9 +1,12 @@
 import { fail, ok, parseJsonBody } from "@/lib/api";
 import { sendQrEmail } from "@/lib/email-service";
-import { getProductById } from "@/lib/products";
-import { createEmailLog, getQrRecordById } from "@/lib/repositories";
+import {
+  createEmailLog,
+  getProductById,
+  getQrRecordById,
+  getTransactionById,
+} from "@/lib/repositories";
 import { isEmail } from "@/lib/validation";
-import { getTransactionById } from "@/lib/repositories";
 
 type SendEmailBody = {
   qrId?: string;
@@ -34,7 +37,7 @@ export async function POST(request: Request) {
     return fail("Transaction not found", 404);
   }
 
-  const product = getProductById(transaction.productId);
+  const product = await getProductById(transaction.productId);
   if (!product) {
     return fail("Product not found", 404);
   }

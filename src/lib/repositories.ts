@@ -1,18 +1,56 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { db } from "@/lib/db";
-import { emailLogs, qrRecords, transactions, users } from "@/lib/db/schema";
+import {
+  emailLogs,
+  products,
+  qrRecords,
+  transactions,
+  users,
+} from "@/lib/db/schema";
 import type {
   DecisionStatus,
   EmailLog,
+  PaginatedResult,
   PaymentStatus,
+  Product,
   QrRecord,
   Transaction,
   User,
 } from "@/lib/types";
 
+const PAGE_LIMIT = 10;
+
 function nowIso() {
   return new Date().toISOString();
+}
+
+// ─── Products ────────────────────────────────────────────────────────────────
+
+export async function listProducts(): Promise<Product[]> {
+  return (await db
+    .select()
+    .from(products)
+    .where(eq(products.active, true))
+    .orderBy(products.name)
+    .all()) as Product[];
+}
+
+export async function getAllProducts(): Promise<Product[]> {
+  return (await db
+    .select()
+    .from(products)
+    .orderBy(products.name)
+    .all()) as Product[];
+}
+
+export async function getProductById(id: string): Promise<Product | null> {
+  const rows = await db
+    .select()
+    .from(products)
+    .where(eq(products.id, id))
+    .all();
+  return (rows[0] as Product) ?? null;
 }
 
 // ─── Transactions ────────────────────────────────────────────────────────────
@@ -87,6 +125,36 @@ export async function deleteTransaction(id: string): Promise<boolean> {
   return result.rowsAffected > 0;
 }
 
+export async function listTransactionsPaginated(params: {
+  page: number;
+  paymentStatus?: PaymentStatus;
+}): Promise<PaginatedResult<Transaction>> {
+  const { page, paymentStatus } = params;
+  const offset = (page - 1) * PAGE_LIMIT;
+  const where = paymentStatus
+    ? eq(transactions.paymentStatus, paymentStatus)
+    : undefined;
+
+  const [data, [countRow]] = await Promise.all([
+    db
+      .select()
+      .from(transactions)
+      .where(where)
+      .orderBy(desc(transactions.createdAt))
+      .limit(PAGE_LIMIT)
+      .offset(offset)
+      .all(),
+    db.select({ total: count() }).from(transactions).where(where).all(),
+  ]);
+
+  return {
+    data: data as Transaction[],
+    total: countRow?.total ?? 0,
+    page,
+    limit: PAGE_LIMIT,
+  };
+}
+
 // ─── QR Records ─────────────────────────────────────────────────────────────
 
 export async function listQrRecords(): Promise<QrRecord[]> {
@@ -150,6 +218,36 @@ export async function deleteQrRecord(id: string): Promise<boolean> {
   return result.rowsAffected > 0;
 }
 
+export async function listQrRecordsPaginated(params: {
+  page: number;
+  decisionStatus?: DecisionStatus;
+}): Promise<PaginatedResult<QrRecord>> {
+  const { page, decisionStatus } = params;
+  const offset = (page - 1) * PAGE_LIMIT;
+  const where = decisionStatus
+    ? eq(qrRecords.decisionStatus, decisionStatus)
+    : undefined;
+
+  const [data, [countRow]] = await Promise.all([
+    db
+      .select()
+      .from(qrRecords)
+      .where(where)
+      .orderBy(desc(qrRecords.createdAt))
+      .limit(PAGE_LIMIT)
+      .offset(offset)
+      .all(),
+    db.select({ total: count() }).from(qrRecords).where(where).all(),
+  ]);
+
+  return {
+    data: data as QrRecord[],
+    total: countRow?.total ?? 0,
+    page,
+    limit: PAGE_LIMIT,
+  };
+}
+
 export async function decideQrRecord(
   id: string,
   decision: Extract<DecisionStatus, "accepted" | "declined">,
@@ -198,6 +296,34 @@ export async function createEmailLog(
 
 export async function listEmailLogs(): Promise<EmailLog[]> {
   return (await db.select().from(emailLogs).all()) as EmailLog[];
+}
+
+export async function listEmailLogsPaginated(params: {
+  page: number;
+  status?: "sent" | "failed";
+}): Promise<PaginatedResult<EmailLog>> {
+  const { page, status } = params;
+  const offset = (page - 1) * PAGE_LIMIT;
+  const where = status ? eq(emailLogs.status, status) : undefined;
+
+  const [data, [countRow]] = await Promise.all([
+    db
+      .select()
+      .from(emailLogs)
+      .where(where)
+      .orderBy(desc(emailLogs.createdAt))
+      .limit(PAGE_LIMIT)
+      .offset(offset)
+      .all(),
+    db.select({ total: count() }).from(emailLogs).where(where).all(),
+  ]);
+
+  return {
+    data: data as EmailLog[],
+    total: countRow?.total ?? 0,
+    page,
+    limit: PAGE_LIMIT,
+  };
 }
 
 // ─── Users ───────────────────────────────────────────────────────────────────

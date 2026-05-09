@@ -1,5 +1,16 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export const products = sqliteTable("products", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: integer("price").notNull(),
+  currency: text("currency", { enum: ["USD"] }).notNull(),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
 export const transactions = sqliteTable("transactions", {
   id: text("id").primaryKey(),
   productId: text("product_id").notNull(),

@@ -59,6 +59,13 @@ export function SiteHeader() {
             Home
           </Link>
 
+          <Link
+            href="/scan"
+            className="rounded-full border border-amber-600 px-3 py-1.5 font-medium text-amber-700 transition hover:bg-amber-50"
+          >
+            Scan QR
+          </Link>
+
           {authState === "admin" ? (
             <>
               <Link

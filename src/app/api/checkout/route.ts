@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     return fail("Invalid JSON body", 400);
   }
 
-  const validation = validateProductId(body.productId);
+  const validation = await validateProductId(body.productId);
   if (!validation.valid) {
     return fail("Validation failed", 400, validation.message);
   }
