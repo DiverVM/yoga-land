@@ -13,9 +13,18 @@ export async function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-stone-900/10 bg-white backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
-        <Link href="/" className="font-semibold tracking-tight text-stone-900">
-          {t("brand")}
-        </Link>
+        <div className="flex items-baseline gap-2">
+          <Link
+            href="/"
+            className="font-semibold tracking-tight text-stone-900"
+          >
+            {t("brand")}
+          </Link>
+          <span className="hidden text-xs text-stone-400 sm:inline">
+            v{process.env.NEXT_PUBLIC_APP_VERSION}{" "}
+            <span className="font-mono">{process.env.NEXT_PUBLIC_GIT_SHA}</span>
+          </span>
+        </div>
 
         <HeaderMenu isAdmin={isAdmin} />
       </div>
