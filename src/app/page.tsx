@@ -29,17 +29,6 @@ export default async function Home() {
               QR code that confirms your booking at the door.
             </p>
           </div>
-
-          {isAdmin ? (
-            <div className="flex flex-wrap gap-3 text-sm">
-              <Link
-                href="/admin"
-                className="rounded-full border border-stone-900 px-4 py-2 font-medium transition hover:bg-stone-900 hover:text-white"
-              >
-                Admin Panel
-              </Link>
-            </div>
-          ) : null}
         </section>
 
         <section className="rounded-2xl border border-stone-900/10 bg-white p-5 shadow-lg shadow-stone-900/5 md:p-6">

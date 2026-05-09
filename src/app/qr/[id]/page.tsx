@@ -78,7 +78,7 @@ export default async function QrDetailsPage({ params }: Props) {
             href="/admin"
             className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
           >
-            Open admin debug
+            Back to admin panel
           </Link>
           <Link
             href="/"
