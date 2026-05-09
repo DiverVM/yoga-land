@@ -1,5 +1,6 @@
 import { and, count, desc, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import {
   emailLogs,
@@ -27,31 +28,43 @@ function nowIso() {
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
-export async function listProducts(): Promise<Product[]> {
-  return (await db
-    .select()
-    .from(products)
-    .where(eq(products.active, true))
-    .orderBy(products.name)
-    .all()) as Product[];
-}
+export const listProducts = unstable_cache(
+  async (): Promise<Product[]> => {
+    return (await db
+      .select()
+      .from(products)
+      .where(eq(products.active, true))
+      .orderBy(products.name)
+      .all()) as Product[];
+  },
+  ["products-active"],
+  { tags: ["products"], revalidate: 3600 },
+);
 
-export async function getAllProducts(): Promise<Product[]> {
-  return (await db
-    .select()
-    .from(products)
-    .orderBy(products.name)
-    .all()) as Product[];
-}
+export const getAllProducts = unstable_cache(
+  async (): Promise<Product[]> => {
+    return (await db
+      .select()
+      .from(products)
+      .orderBy(products.name)
+      .all()) as Product[];
+  },
+  ["products-all"],
+  { tags: ["products"], revalidate: 3600 },
+);
 
-export async function getProductById(id: string): Promise<Product | null> {
-  const rows = await db
-    .select()
-    .from(products)
-    .where(eq(products.id, id))
-    .all();
-  return (rows[0] as Product) ?? null;
-}
+export const getProductById = unstable_cache(
+  async (id: string): Promise<Product | null> => {
+    const rows = await db
+      .select()
+      .from(products)
+      .where(eq(products.id, id))
+      .all();
+    return (rows[0] as Product) ?? null;
+  },
+  ["products-by-id"],
+  { tags: ["products"], revalidate: 3600 },
+);
 
 // ─── Transactions ────────────────────────────────────────────────────────────
 
