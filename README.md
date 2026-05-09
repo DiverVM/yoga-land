@@ -12,7 +12,7 @@ Mocked payment-to-QR flow built with Next.js App Router and TypeScript.
   - copy URL
   - download as PDF
   - open in new tab
-  - send by email (mocked, persisted in logs)
+  - send by email via Resend (persisted in logs)
 - Public QR details page with decoded payload.
 - QR accept/decline actions that update persistent state.
 - Admin/debug page to inspect transactions, QR records, and email logs.
@@ -60,6 +60,10 @@ DATABASE_URL=file:./data/app.db
 # hosted libSQL/Turso mode
 # DATABASE_URL=libsql://<your-db>.turso.io
 # DATABASE_AUTH_TOKEN=<your-token>
+
+# email delivery via Resend
+# RESEND_API_KEY=<your-resend-api-key>
+# RESEND_FROM_EMAIL=delivered@resend.dev
 ```
 
 ## User flow
@@ -202,7 +206,7 @@ Rules:
 - First decision from `pending` is accepted.
 - Repeated decision attempts return `409` conflict and preserve state.
 
-### Mock email
+### Email delivery
 
 - `POST /api/email/send`
 
@@ -237,7 +241,7 @@ Request:
 ## Known limitations (mocked v1)
 
 - Payment provider is mocked (no external gateway yet).
-- Email sending is mocked (only logs records).
+- Email sending depends on valid Resend configuration.
 - File-based JSON persistence is not suitable for high concurrency.
 - No authentication/authorization yet.
 - No dedicated automated tests added in this iteration.

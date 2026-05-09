@@ -82,7 +82,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
         throw new Error(body.details ?? body.error ?? "Email request failed");
       }
 
-      setMessage("Mock email sent and logged.");
+      setMessage("Email sent and logged.");
       setEmail("");
     } catch (error) {
       setMessage(
@@ -122,7 +122,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
 
       <div className="space-y-2 rounded-xl border border-stone-200 p-3">
         <p className="text-xs font-medium tracking-wide text-stone-600 uppercase">
-          Send QR by email (mock)
+          Send QR by email
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
