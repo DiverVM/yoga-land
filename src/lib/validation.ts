@@ -27,7 +27,7 @@ export async function validateProductId(productId: unknown) {
   if (!isNonEmptyString(productId)) {
     return {
       valid: false as const,
-      message: "productId is required",
+      message: "Требуется productId",
     };
   }
 
@@ -35,7 +35,7 @@ export async function validateProductId(productId: unknown) {
   if (!product) {
     return {
       valid: false as const,
-      message: "Unknown productId",
+      message: "Неизвестный productId",
     };
   }
 

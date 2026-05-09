@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { CheckoutPanel } from "@/components/checkout-panel";
+import { t } from "@/i18n";
 import { listProducts } from "@/lib/repositories";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
@@ -22,11 +23,10 @@ export default async function Home() {
         <section className="flex flex-col justify-between gap-6">
           <div className="space-y-4">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              Yoga classes, booked in seconds.
+              {t("landing.title")}
             </h1>
             <p className="max-w-md text-base leading-7 text-stone-700">
-              Choose a course, complete your purchase, and receive a scannable
-              QR code that confirms your booking at the door.
+              {t("landing.subtitle")}
             </p>
           </div>
         </section>

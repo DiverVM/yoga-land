@@ -1,7 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { QrDecisionPanel } from "@/components/qr-decision-panel";
+import { t } from "@/i18n";
+import { formatDateTime, formatMoney } from "@/lib/format";
 import { getQrRecordById, getTransactionById } from "@/lib/repositories";
+
+function localizeStatus(value: string) {
+  const map: Record<string, string> = {
+    pending: t("admin.pending"),
+    success: t("admin.success"),
+    failed: t("admin.failed"),
+    accepted: t("admin.accepted"),
+    declined: t("admin.declined"),
+  };
+
+  return map[value] ?? value;
+}
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -30,30 +44,41 @@ export default async function QrDetailsPage({ params }: Props) {
     <div className="min-h-screen bg-amber-50 px-4 py-24">
       <main className="mx-auto w-full max-w-4xl space-y-5 rounded-3xl bg-white p-6 shadow-xl">
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-stone-900">QR Details</h1>
+          <h1 className="text-3xl font-bold text-stone-900">
+            {t("qrDetails.title")}
+          </h1>
           <p className="text-sm text-stone-600">
-            QR record {qrRecord.id} linked to transaction {transaction.id}
+            {t("qrDetails.subtitle", {
+              qrId: qrRecord.id,
+              transactionId: transaction.id,
+            })}
           </p>
         </header>
 
         <section className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2 rounded-xl border border-stone-200 p-4">
             <h2 className="text-sm font-semibold tracking-wide text-stone-700 uppercase">
-              Transaction info
+              {t("qrDetails.transactionInfo")}
             </h2>
-            <p className="text-sm">Product ID: {transaction.productId}</p>
             <p className="text-sm">
-              Amount: ${transaction.amount} {transaction.currency}
+              {t("qrDetails.productId")}: {transaction.productId}
             </p>
             <p className="text-sm">
-              Payment status: {transaction.paymentStatus}
+              {t("qrDetails.amount")}:{" "}
+              {formatMoney(transaction.amount, transaction.currency)}
             </p>
-            <p className="text-sm">Created: {transaction.createdAt}</p>
+            <p className="text-sm">
+              {t("qrDetails.paymentStatus")}:{" "}
+              {localizeStatus(transaction.paymentStatus)}
+            </p>
+            <p className="text-sm">
+              {t("qrDetails.created")}: {formatDateTime(transaction.createdAt)}
+            </p>
           </div>
 
           <div className="space-y-2 rounded-xl border border-stone-200 p-4">
             <h2 className="text-sm font-semibold tracking-wide text-stone-700 uppercase">
-              Decoded QR payload
+              {t("qrDetails.decodedPayload")}
             </h2>
             {decodedPayload ? (
               <pre className="max-h-56 overflow-auto rounded-lg bg-stone-100 p-3 text-xs text-stone-700">
@@ -61,10 +86,12 @@ export default async function QrDetailsPage({ params }: Props) {
               </pre>
             ) : (
               <p className="text-sm text-red-700">
-                Unable to decode payload JSON.
+                {t("qrDetails.decodeFailed")}
               </p>
             )}
-            <p className="text-xs text-stone-500">QR URL: {qrRecord.qrUrl}</p>
+            <p className="text-xs text-stone-500">
+              {t("qrDetails.qrUrl")}: {qrRecord.qrUrl}
+            </p>
           </div>
         </section>
 
@@ -78,13 +105,13 @@ export default async function QrDetailsPage({ params }: Props) {
             href="/admin"
             className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
           >
-            Back to admin panel
+            {t("qrDetails.backToAdmin")}
           </Link>
           <Link
             href="/"
             className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100"
           >
-            Back to landing
+            {t("common.backToLanding")}
           </Link>
         </div>
       </main>

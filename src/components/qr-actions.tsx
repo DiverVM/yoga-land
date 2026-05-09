@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
+import { t } from "@/i18n";
 
 type QrActionsProps = {
   qrId: string;
@@ -19,7 +20,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
 
   async function handleCopy() {
     await navigator.clipboard.writeText(qrUrl);
-    setMessage("QR URL copied to clipboard.");
+    setMessage(t("qrActions.copied"));
   }
 
   async function handleDownloadPdf() {
@@ -37,15 +38,15 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
       });
 
       pdf.setFontSize(14);
-      pdf.text("Yoga Land Mock QR", 40, 40);
+      pdf.text(t("qrActions.pdfTitle"), 40, 40);
       pdf.addImage(qrDataUrl, "PNG", 40, 60, 220, 220);
       pdf.setFontSize(10);
       pdf.text(qrUrl, 40, 300, { maxWidth: 520 });
       pdf.save(`qr-${qrId}.pdf`);
 
-      setMessage("PDF downloaded.");
+      setMessage(t("qrActions.pdfDownloaded"));
     } catch {
-      setMessage("Failed to generate PDF.");
+      setMessage(t("qrActions.pdfFailed"));
     } finally {
       setIsPdfLoading(false);
     }
@@ -53,12 +54,12 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
 
   function handleOpen() {
     window.open(qrUrl, "_blank", "noopener,noreferrer");
-    setMessage("Opened QR URL in a new tab.");
+    setMessage(t("qrActions.openedTab"));
   }
 
   async function handleSendEmail() {
     if (!canSendEmail) {
-      setMessage("Enter an email address first.");
+      setMessage(t("qrActions.enterEmail"));
       return;
     }
 
@@ -79,14 +80,16 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
       };
 
       if (!response.ok) {
-        throw new Error(body.details ?? body.error ?? "Email request failed");
+        throw new Error(
+          body.details ?? body.error ?? t("qrActions.emailFailed"),
+        );
       }
 
-      setMessage("Email sent and logged.");
+      setMessage(t("qrActions.emailSent"));
       setEmail("");
     } catch (error) {
       setMessage(
-        error instanceof Error ? error.message : "Email request failed",
+        error instanceof Error ? error.message : t("qrActions.emailFailed"),
       );
     } finally {
       setIsEmailLoading(false);
@@ -101,7 +104,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
           onClick={handleCopy}
           type="button"
         >
-          Copy
+          {t("qrActions.copy")}
         </button>
         <button
           className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
@@ -109,20 +112,22 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
           type="button"
           disabled={isPdfLoading}
         >
-          {isPdfLoading ? "Generating PDF..." : "Download PDF"}
+          {isPdfLoading
+            ? t("qrActions.generatingPdf")
+            : t("qrActions.downloadPdf")}
         </button>
         <button
           className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white sm:col-span-2"
           onClick={handleOpen}
           type="button"
         >
-          Open in new tab
+          {t("qrActions.openInTab")}
         </button>
       </div>
 
       <div className="space-y-2 rounded-xl border border-stone-200 p-3">
         <p className="text-xs font-medium tracking-wide text-stone-600 uppercase">
-          Send QR by email
+          {t("qrActions.sendByEmail")}
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
@@ -138,7 +143,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
             disabled={isEmailLoading}
             className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isEmailLoading ? "Sending..." : "Send"}
+            {isEmailLoading ? t("qrActions.sending") : t("qrActions.send")}
           </button>
         </div>
       </div>

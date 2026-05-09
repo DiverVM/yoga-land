@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { t } from "@/i18n";
 
 type QrDecisionPanelProps = {
   qrId: string;
@@ -11,6 +12,13 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
   const [status, setStatus] = useState(initialStatus);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const statusLabel =
+    status === "pending"
+      ? t("admin.pending")
+      : status === "accepted"
+        ? t("admin.accepted")
+        : t("admin.declined");
 
   async function submitDecision(decision: "accept" | "decline") {
     setMessage(null);
@@ -28,7 +36,9 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
       };
 
       if (!response.ok) {
-        throw new Error(body.details ?? body.error ?? "Decision update failed");
+        throw new Error(
+          body.details ?? body.error ?? t("qrDecision.updateFailed"),
+        );
       }
 
       if (body.qrRecord) {
@@ -36,11 +46,13 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
       }
 
       setMessage(
-        `QR has been ${decision === "accept" ? "accepted" : "declined"}.`,
+        decision === "accept"
+          ? t("qrDecision.accepted")
+          : t("qrDecision.declined"),
       );
     } catch (error) {
       setMessage(
-        error instanceof Error ? error.message : "Unable to update QR status",
+        error instanceof Error ? error.message : t("qrDecision.updateFailed"),
       );
     } finally {
       setIsSubmitting(false);
@@ -52,8 +64,8 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
   return (
     <div className="space-y-3 rounded-xl border border-stone-200 p-4">
       <p className="text-sm text-stone-600">
-        Current decision:{" "}
-        <span className="font-semibold text-stone-900">{status}</span>
+        {t("qrDecision.currentDecision")}:{" "}
+        <span className="font-semibold text-stone-900">{statusLabel}</span>
       </p>
       <div className="grid gap-2 sm:grid-cols-2">
         <button
@@ -62,7 +74,7 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
           onClick={() => submitDecision("accept")}
           className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Accept QR-code
+          {t("qrDecision.accept")}
         </button>
         <button
           type="button"
@@ -70,7 +82,7 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
           onClick={() => submitDecision("decline")}
           className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Decline QR-code
+          {t("qrDecision.decline")}
         </button>
       </div>
       {message ? (

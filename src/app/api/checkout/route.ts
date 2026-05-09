@@ -46,20 +46,20 @@ function resolveOrigin(host: string | null): string {
 export async function POST(request: Request) {
   const body = await parseJsonBody<CheckoutBody>(request);
   if (!body) {
-    return fail("Invalid JSON body", 400);
+    return fail("Некорректное JSON-тело запроса", 400);
   }
 
   const validation = await validateProductId(body.productId);
   if (!validation.valid) {
-    return fail("Validation failed", 400, validation.message);
+    return fail("Ошибка валидации", 400, validation.message);
   }
 
   const mode = body.mode ?? "auto";
   if (!["auto", "success", "failed"].includes(mode)) {
     return fail(
-      "Validation failed",
+      "Ошибка валидации",
       400,
-      "mode must be one of: auto, success, failed",
+      "mode должен быть одним из: auto, success, failed",
     );
   }
 
@@ -94,7 +94,7 @@ export async function POST(request: Request) {
   });
 
   if (!successTransaction) {
-    return fail("Transaction state error", 500);
+    return fail("Ошибка состояния транзакции", 500);
   }
 
   const origin = resolveOrigin((await headers()).get("host"));

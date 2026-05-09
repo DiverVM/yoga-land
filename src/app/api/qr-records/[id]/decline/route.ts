@@ -5,19 +5,26 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+function localizeDecisionStatus(status: string) {
+  if (status === "pending") return "в ожидании";
+  if (status === "accepted") return "принят";
+  if (status === "declined") return "отклонен";
+  return status;
+}
+
 export async function POST(_request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   const result = await decideQrRecord(id, "declined");
   if (!result.record) {
-    return fail("QR record not found", 404);
+    return fail("QR-запись не найдена", 404);
   }
 
   if (result.conflict) {
     return fail(
-      "QR record was already decided",
+      "По QR-записи уже принято решение",
       409,
-      `Current status: ${result.record.decisionStatus}`,
+      `Текущий статус: ${localizeDecisionStatus(result.record.decisionStatus)}`,
     );
   }
 

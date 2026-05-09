@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { t } from "@/i18n";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,14 +27,14 @@ export default function LoginPage() {
       const data = (await res.json()) as { error?: string };
 
       if (!res.ok) {
-        throw new Error(data.error ?? "Login failed");
+        throw new Error(data.error ?? t("login.failed"));
       }
 
       window.dispatchEvent(new Event("auth-changed"));
       router.push("/admin");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t("login.failed"));
     } finally {
       setIsLoading(false);
     }
@@ -47,17 +48,19 @@ export default function LoginPage() {
       <main className="relative w-full max-w-sm space-y-6 rounded-3xl border border-stone-800/10 bg-white/85 p-8 shadow-2xl shadow-orange-950/20 backdrop-blur">
         <div className="space-y-3">
           <p className="inline-block rounded-full border border-stone-900/20 bg-white px-3 py-1 text-xs font-semibold tracking-[0.18em] uppercase">
-            Admin Access
+            {t("login.badge")}
           </p>
-          <h1 className="text-2xl font-bold text-stone-900">Admin Login</h1>
-          <p className="text-sm text-stone-600">
-            Sign in to access the admin area.
-          </p>
+          <h1 className="text-2xl font-bold text-stone-900">
+            {t("login.title")}
+          </h1>
+          <p className="text-sm text-stone-600">{t("login.subtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block space-y-1">
-            <span className="text-sm font-medium text-stone-700">Login</span>
+            <span className="text-sm font-medium text-stone-700">
+              {t("login.loginLabel")}
+            </span>
             <input
               type="text"
               value={login}
@@ -69,7 +72,9 @@ export default function LoginPage() {
           </label>
 
           <label className="block space-y-1">
-            <span className="text-sm font-medium text-stone-700">Password</span>
+            <span className="text-sm font-medium text-stone-700">
+              {t("login.passwordLabel")}
+            </span>
             <input
               type="password"
               value={password}
@@ -91,13 +96,13 @@ export default function LoginPage() {
             disabled={isLoading}
             className="w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? t("login.signingIn") : t("login.signIn")}
           </button>
         </form>
 
         <div className="text-center text-sm">
           <Link href="/" className="font-medium text-stone-700 underline">
-            Back to home
+            {t("login.backHome")}
           </Link>
         </div>
       </main>

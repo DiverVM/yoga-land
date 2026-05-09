@@ -73,7 +73,7 @@ export async function getTransactionById(
 type CreateTransactionInput = {
   productId: string;
   amount: number;
-  currency: "USD";
+  currency: "BYN";
   paymentStatus?: PaymentStatus;
   qrId?: string | null;
 };

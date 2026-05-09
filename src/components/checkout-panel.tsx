@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { t } from "@/i18n";
+import { formatMoney } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 type CheckoutResponse = {
@@ -27,7 +29,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
 
   async function handlePay() {
     if (!selectedProduct) {
-      setError("Please select a course.");
+      setError(t("checkout.selectCourse"));
       return;
     }
 
@@ -52,7 +54,9 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
       };
 
       if (!response.ok) {
-        throw new Error(data.details ?? data.error ?? "Checkout failed");
+        throw new Error(
+          data.details ?? data.error ?? t("checkout.checkoutFailed"),
+        );
       }
 
       router.push(data.redirectUrl);
@@ -60,7 +64,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "Checkout failed",
+          : t("checkout.checkoutFailed"),
       );
     } finally {
       setIsLoading(false);
@@ -70,17 +74,17 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-2xl font-bold">Buy a Course</h2>
-        <p className="mt-1 text-sm text-stone-600">
-          Select a course below and complete your purchase to receive a QR code.
-        </p>
+        <h2 className="text-2xl font-bold">{t("checkout.title")}</h2>
+        <p className="mt-1 text-sm text-stone-600">{t("checkout.subtitle")}</p>
       </div>
 
       <label className="block space-y-2">
-        <span className="text-sm font-medium text-stone-700">Course</span>
+        <span className="text-sm font-medium text-stone-700">
+          {t("checkout.course")}
+        </span>
         {products.length === 0 ? (
           <div className="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-400">
-            No active courses available.
+            {t("checkout.noCourses")}
           </div>
         ) : (
           <select
@@ -90,7 +94,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
           >
             {products.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.name} — ${product.price} {product.currency}
+                {product.name} — {formatMoney(product.price, product.currency)}
               </option>
             ))}
           </select>
@@ -99,7 +103,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
 
       <label className="block space-y-2">
         <span className="text-sm font-medium text-stone-700">
-          Payment simulation
+          {t("checkout.paymentSimulation")}
         </span>
         <select
           className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
@@ -108,19 +112,19 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
             setMode(event.target.value as "auto" | "success" | "failed")
           }
         >
-          <option value="auto">Auto</option>
-          <option value="success">Success</option>
-          <option value="failed">Failed</option>
+          <option value="auto">{t("checkout.simulationAuto")}</option>
+          <option value="success">{t("checkout.simulationSuccess")}</option>
+          <option value="failed">{t("checkout.simulationFailed")}</option>
         </select>
       </label>
 
       {selectedProduct ? (
         <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-950">
           <p className="mb-1 text-stone-600">{selectedProduct.description}</p>
-          Total: <span className="font-bold">
-            ${selectedProduct.price}
-          </span>{" "}
-          {selectedProduct.currency}
+          {t("checkout.total")}:{" "}
+          <span className="font-bold">
+            {formatMoney(selectedProduct.price, selectedProduct.currency)}
+          </span>
         </div>
       ) : null}
 
@@ -136,7 +140,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         disabled={isLoading || products.length === 0}
         className="w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isLoading ? "Processing…" : "Pay now"}
+        {isLoading ? t("checkout.processing") : t("checkout.payNow")}
       </button>
     </div>
   );

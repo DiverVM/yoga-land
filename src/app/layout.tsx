@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yoga Land Mock QR Payments",
+  title: "Yoga Land — Оплата и QR",
   description:
-    "Mocked v1 flow: payment simulation, QR generation, and decision tracking.",
+    "Поток оплаты, генерации QR-кода и управления решениями для Yoga Land.",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ru"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

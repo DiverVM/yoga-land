@@ -1,4 +1,4 @@
-export type Currency = "USD";
+export type Currency = "BYN";
 
 export type PaymentStatus = "pending" | "success" | "failed";
 

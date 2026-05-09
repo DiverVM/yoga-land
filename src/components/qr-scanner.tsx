@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { t } from "@/i18n";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
@@ -34,7 +35,7 @@ async function decodeQrFile(file: File): Promise<string> {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
       const element = new Image();
       element.onload = () => resolve(element);
-      element.onerror = () => reject(new Error("Unable to read image."));
+      element.onerror = () => reject(new Error(t("scanner.unableReadImage")));
       element.src = imageUrl;
     });
 
@@ -44,7 +45,7 @@ async function decodeQrFile(file: File): Promise<string> {
 
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) {
-      throw new Error("Unable to process image.");
+      throw new Error(t("scanner.unableProcessImage"));
     }
 
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -54,7 +55,7 @@ async function decodeQrFile(file: File): Promise<string> {
     });
 
     if (!code) {
-      throw new Error("QR code not found in the selected image.");
+      throw new Error(t("scanner.qrNotFoundImage"));
     }
 
     return code.data;
@@ -69,7 +70,7 @@ async function decodeQrPdf(file: File): Promise<string> {
   const pdf = await loadingTask.promise;
 
   if (pdf.numPages < 1) {
-    throw new Error("PDF has no pages.");
+    throw new Error(t("scanner.pdfNoPages"));
   }
 
   const page = await pdf.getPage(1);
@@ -80,7 +81,7 @@ async function decodeQrPdf(file: File): Promise<string> {
 
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) {
-    throw new Error("Unable to process PDF.");
+    throw new Error(t("scanner.unableProcessImage"));
   }
 
   await page.render({ canvas, canvasContext: ctx, viewport }).promise;
@@ -91,7 +92,7 @@ async function decodeQrPdf(file: File): Promise<string> {
   });
 
   if (!code) {
-    throw new Error("QR code not found on the first PDF page.");
+    throw new Error(t("scanner.qrNotFoundPdf"));
   }
 
   return code.data;
@@ -116,7 +117,7 @@ export function QrScanner() {
     if (!qrId) {
       setResult({
         kind: "error",
-        message: "Not a Yoga Land QR code.",
+        message: t("scanner.notYogaQr"),
       });
       return;
     }
@@ -139,22 +140,24 @@ export function QrScanner() {
       if (res.status === 409) {
         setResult({
           kind: "conflict",
-          message: body.details ?? body.error ?? "QR was already decided.",
+          message: body.details ?? body.error ?? t("scanner.alreadyDecided"),
           qrId,
         });
       } else if (!res.ok) {
-        throw new Error(body.details ?? body.error ?? "Accept failed.");
+        throw new Error(
+          body.details ?? body.error ?? t("scanner.acceptFailed"),
+        );
       } else {
         setResult({
           kind: "success",
-          message: "QR accepted successfully!",
+          message: t("scanner.accepted"),
           qrId,
         });
       }
     } catch (err) {
       setResult({
         kind: "error",
-        message: err instanceof Error ? err.message : "Accept failed.",
+        message: err instanceof Error ? err.message : t("scanner.acceptFailed"),
       });
     } finally {
       setProcessing(false);
@@ -209,17 +212,13 @@ export function QrScanner() {
       try {
         if (!window.isSecureContext) {
           setCanUseLiveCamera(false);
-          setCameraError(
-            "Live camera is blocked on Safari over http://192.168.x.x. Use HTTPS or the photo fallback below.",
-          );
+          setCameraError(t("scanner.cameraBlockedHttp"));
           return;
         }
 
         if (!navigator.mediaDevices?.getUserMedia) {
           setCanUseLiveCamera(false);
-          setCameraError(
-            "This browser does not provide live camera access here. Use the photo fallback below.",
-          );
+          setCameraError(t("scanner.browserNoCamera"));
           return;
         }
 
@@ -250,8 +249,8 @@ export function QrScanner() {
         setCanUseLiveCamera(false);
         setCameraError(
           err instanceof Error
-            ? `${err.message}. You can still scan from a photo below.`
-            : "Camera access denied. You can still scan from a photo below.",
+            ? `${err.message}. ${t("scanner.fallbackSubtitle")}`
+            : t("scanner.cameraDenied"),
         );
       }
     }
@@ -286,7 +285,7 @@ export function QrScanner() {
       setResult({
         kind: "error",
         message:
-          err instanceof Error ? err.message : "Unable to process image.",
+          err instanceof Error ? err.message : t("scanner.unableProcessImage"),
       });
     } finally {
       setProcessing(false);
@@ -316,7 +315,7 @@ export function QrScanner() {
                 href={`/qr/${result.qrId}`}
                 className="inline-block text-xs font-semibold underline underline-offset-2"
               >
-                Open QR details
+                {t("scanner.openQrDetails")}
               </Link>
             </div>
           )}
@@ -326,7 +325,7 @@ export function QrScanner() {
       {/* Camera viewport */}
       {cameraError ? (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          <p className="font-semibold">Camera unavailable</p>
+          <p className="font-semibold">{t("scanner.cameraUnavailable")}</p>
           <p className="mt-1 opacity-80">{cameraError}</p>
         </div>
       ) : null}
@@ -368,13 +367,12 @@ export function QrScanner() {
       ) : null}
 
       <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-700">
-        <p className="font-semibold text-stone-900">Fallback scan</p>
-        <p className="mt-1">
-          If live camera is blocked, use the device camera or gallery to pick a
-          QR image and it will be accepted automatically.
+        <p className="font-semibold text-stone-900">
+          {t("scanner.fallbackTitle")}
         </p>
+        <p className="mt-1">{t("scanner.fallbackSubtitle")}</p>
         <label className="mt-3 inline-flex cursor-pointer items-center rounded-lg border border-stone-300 bg-white px-4 py-2 font-medium text-stone-800 shadow-sm hover:bg-stone-100">
-          Take photo / Choose image / Upload PDF
+          {t("scanner.uploadAction")}
           <input
             type="file"
             accept="image/*,application/pdf"

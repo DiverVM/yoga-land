@@ -29,6 +29,13 @@
       "when": 1778318843160,
       "tag": "0003_reflective_retro_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1778323200000,
+      "tag": "0004_russian_byn_update",
+      "breakpoints": true
     }
   ]
 }

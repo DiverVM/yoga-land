@@ -16,17 +16,17 @@ type LoginBody = {
 export async function POST(request: Request) {
   const body = await parseJsonBody<LoginBody>(request);
   if (!body?.login || !body?.password) {
-    return fail("login and password are required", 400);
+    return fail("Требуются логин и пароль", 400);
   }
 
   const user = await getUserByLogin(body.login);
   if (!user) {
-    return fail("Invalid credentials", 401);
+    return fail("Неверные учетные данные", 401);
   }
 
   const valid = await verifyPassword(body.password, user.passwordHash);
   if (!valid) {
-    return fail("Invalid credentials", 401);
+    return fail("Неверные учетные данные", 401);
   }
 
   const expiresAt = Date.now() + SESSION_MAX_AGE * 1000;

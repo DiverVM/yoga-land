@@ -5,6 +5,8 @@ import {
   listQrRecordsPaginated,
   listTransactionsPaginated,
 } from "@/lib/repositories";
+import { t } from "@/i18n";
+import { formatDateTime, formatMoney } from "@/lib/format";
 import { isDecisionStatus, isPaymentStatus } from "@/lib/validation";
 
 type AdminSearchParams = {
@@ -19,6 +21,19 @@ type AdminSearchParams = {
 function parsePage(v?: string) {
   const n = parseInt(v ?? "1", 10);
   return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+function localizeStatus(value: string) {
+  const map: Record<string, string> = {
+    pending: t("admin.pending"),
+    success: t("admin.success"),
+    failed: t("admin.failed"),
+    accepted: t("admin.accepted"),
+    declined: t("admin.declined"),
+    sent: t("admin.sent"),
+  };
+
+  return map[value] ?? value;
 }
 
 function adminHref(
@@ -62,26 +77,26 @@ function Pagination({
           href={adminHref(current, { [pageParam]: String(page - 1) })}
           className="rounded-lg border border-stone-300 px-3 py-1.5 font-medium text-stone-700 hover:bg-stone-100"
         >
-          ← Prev
+          {t("admin.prev")}
         </Link>
       ) : (
         <span className="rounded-lg border border-stone-200 px-3 py-1.5 text-stone-400">
-          ← Prev
+          {t("admin.prev")}
         </span>
       )}
       <span className="text-stone-500">
-        Page {page} of {totalPages}
+        {t("admin.pageOf", { page, total: totalPages })}
       </span>
       {page < totalPages ? (
         <Link
           href={adminHref(current, { [pageParam]: String(page + 1) })}
           className="rounded-lg border border-stone-300 px-3 py-1.5 font-medium text-stone-700 hover:bg-stone-100"
         >
-          Next →
+          {t("admin.next")}
         </Link>
       ) : (
         <span className="rounded-lg border border-stone-200 px-3 py-1.5 text-stone-400">
-          Next →
+          {t("admin.next")}
         </span>
       )}
     </div>
@@ -149,16 +164,16 @@ export default async function AdminPage({
         <header className="relative rounded-3xl border border-stone-800/10 bg-white/80 p-6 shadow-2xl shadow-orange-950/20 backdrop-blur md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-bold text-stone-900">Admin Panel</h1>
-              <p className="text-sm text-stone-600">
-                Persisted records from your database.
-              </p>
+              <h1 className="text-3xl font-bold text-stone-900">
+                {t("admin.title")}
+              </h1>
+              <p className="text-sm text-stone-600">{t("admin.subtitle")}</p>
             </div>
             <Link
               href="/"
               className="rounded-full border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
             >
-              Back to landing
+              {t("common.backToLanding")}
             </Link>
           </div>
         </header>
@@ -167,7 +182,7 @@ export default async function AdminPage({
         <section className="relative rounded-2xl border border-stone-800/10 bg-white/85 p-4 shadow-lg shadow-stone-900/5 md:p-5">
           <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
             <h2 className="text-xl font-semibold text-stone-900">
-              Transactions ({txResult.total})
+              {t("admin.transactions")} ({txResult.total})
             </h2>
             <form method="GET" className="flex items-center gap-2 text-sm">
               <input type="hidden" name="txPage" value="1" />
@@ -184,16 +199,16 @@ export default async function AdminPage({
                 defaultValue={txStatus ?? ""}
                 className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-sm outline-none ring-orange-500 focus:ring"
               >
-                <option value="">All statuses</option>
-                <option value="pending">Pending</option>
-                <option value="success">Success</option>
-                <option value="failed">Failed</option>
+                <option value="">{t("admin.allStatuses")}</option>
+                <option value="pending">{t("admin.pending")}</option>
+                <option value="success">{t("admin.success")}</option>
+                <option value="failed">{t("admin.failed")}</option>
               </select>
               <button
                 type="submit"
                 className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-medium hover:bg-stone-100"
               >
-                Filter
+                {t("admin.filter")}
               </button>
               {txStatus && (
                 <Link
@@ -203,7 +218,7 @@ export default async function AdminPage({
                   })}
                   className="text-xs text-stone-500 underline"
                 >
-                  Clear
+                  {t("admin.clear")}
                 </Link>
               )}
             </form>
@@ -212,12 +227,12 @@ export default async function AdminPage({
             <table className="w-full min-w-[680px] text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-stone-500">
                 <tr>
-                  <th className="py-2 pr-3">ID</th>
-                  <th className="py-2 pr-3">Course</th>
-                  <th className="py-2 pr-3">Amount</th>
-                  <th className="py-2 pr-3">Status</th>
-                  <th className="py-2 pr-3">QR</th>
-                  <th className="py-2">Date</th>
+                  <th className="py-2 pr-3">{t("admin.id")}</th>
+                  <th className="py-2 pr-3">{t("admin.course")}</th>
+                  <th className="py-2 pr-3">{t("admin.amount")}</th>
+                  <th className="py-2 pr-3">{t("admin.status")}</th>
+                  <th className="py-2 pr-3">{t("admin.qr")}</th>
+                  <th className="py-2">{t("admin.date")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -227,7 +242,7 @@ export default async function AdminPage({
                       colSpan={6}
                       className="py-4 text-center text-sm text-stone-400"
                     >
-                      No transactions found.
+                      {t("admin.noTransactions")}
                     </td>
                   </tr>
                 ) : null}
@@ -240,13 +255,13 @@ export default async function AdminPage({
                       {productNames.get(tx.productId) ?? tx.productId}
                     </td>
                     <td className="py-2 pr-3">
-                      ${tx.amount} {tx.currency}
+                      {formatMoney(tx.amount, tx.currency)}
                     </td>
                     <td className="py-2 pr-3">
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge[tx.paymentStatus] ?? "bg-stone-100 text-stone-600"}`}
                       >
-                        {tx.paymentStatus}
+                        {localizeStatus(tx.paymentStatus)}
                       </span>
                     </td>
                     <td className="py-2 pr-3">
@@ -262,7 +277,7 @@ export default async function AdminPage({
                       )}
                     </td>
                     <td className="py-2 text-xs text-stone-500">
-                      {new Date(tx.createdAt).toLocaleString()}
+                      {formatDateTime(tx.createdAt)}
                     </td>
                   </tr>
                 ))}
@@ -281,7 +296,7 @@ export default async function AdminPage({
         <section className="rounded-2xl border border-stone-800/10 bg-white/85 p-4 shadow-lg shadow-stone-900/5 md:p-5">
           <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
             <h2 className="text-xl font-semibold text-stone-900">
-              QR Records ({qrResult.total})
+              {t("admin.qrRecords")} ({qrResult.total})
             </h2>
             <form method="GET" className="flex items-center gap-2 text-sm">
               <input type="hidden" name="txPage" value={String(txPage)} />
@@ -298,16 +313,16 @@ export default async function AdminPage({
                 defaultValue={qrDecision ?? ""}
                 className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-sm outline-none ring-orange-500 focus:ring"
               >
-                <option value="">All decisions</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="declined">Declined</option>
+                <option value="">{t("admin.allDecisions")}</option>
+                <option value="pending">{t("admin.pending")}</option>
+                <option value="accepted">{t("admin.accepted")}</option>
+                <option value="declined">{t("admin.declined")}</option>
               </select>
               <button
                 type="submit"
                 className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-medium hover:bg-stone-100"
               >
-                Filter
+                {t("admin.filter")}
               </button>
               {qrDecision && (
                 <Link
@@ -317,7 +332,7 @@ export default async function AdminPage({
                   })}
                   className="text-xs text-stone-500 underline"
                 >
-                  Clear
+                  {t("admin.clear")}
                 </Link>
               )}
             </form>
@@ -326,12 +341,12 @@ export default async function AdminPage({
             <table className="w-full min-w-[680px] text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-stone-500">
                 <tr>
-                  <th className="py-2 pr-3">ID</th>
-                  <th className="py-2 pr-3">Transaction</th>
-                  <th className="py-2 pr-3">Decision</th>
-                  <th className="py-2 pr-3">Decided at</th>
-                  <th className="py-2 pr-3">Created</th>
-                  <th className="py-2">Link</th>
+                  <th className="py-2 pr-3">{t("admin.id")}</th>
+                  <th className="py-2 pr-3">{t("admin.transaction")}</th>
+                  <th className="py-2 pr-3">{t("admin.decision")}</th>
+                  <th className="py-2 pr-3">{t("admin.decidedAt")}</th>
+                  <th className="py-2 pr-3">{t("admin.created")}</th>
+                  <th className="py-2">{t("admin.link")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -341,7 +356,7 @@ export default async function AdminPage({
                       colSpan={6}
                       className="py-4 text-center text-sm text-stone-400"
                     >
-                      No QR records found.
+                      {t("admin.noQrRecords")}
                     </td>
                   </tr>
                 ) : null}
@@ -357,23 +372,21 @@ export default async function AdminPage({
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge[qr.decisionStatus] ?? "bg-stone-100 text-stone-600"}`}
                       >
-                        {qr.decisionStatus}
+                        {localizeStatus(qr.decisionStatus)}
                       </span>
                     </td>
                     <td className="py-2 pr-3 text-xs text-stone-500">
-                      {qr.decisionAt
-                        ? new Date(qr.decisionAt).toLocaleString()
-                        : "—"}
+                      {qr.decisionAt ? formatDateTime(qr.decisionAt) : "—"}
                     </td>
                     <td className="py-2 pr-3 text-xs text-stone-500">
-                      {new Date(qr.createdAt).toLocaleString()}
+                      {formatDateTime(qr.createdAt)}
                     </td>
                     <td className="py-2">
                       <Link
                         href={`/qr/${qr.id}`}
                         className="text-xs font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900"
                       >
-                        Open →
+                        {t("admin.open")} →
                       </Link>
                     </td>
                   </tr>
@@ -393,7 +406,7 @@ export default async function AdminPage({
         <section className="rounded-2xl border border-stone-800/10 bg-white/85 p-4 shadow-lg shadow-stone-900/5 md:p-5">
           <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
             <h2 className="text-xl font-semibold text-stone-900">
-              Email Logs ({emailResult.total})
+              {t("admin.emailLogs")} ({emailResult.total})
             </h2>
             <form method="GET" className="flex items-center gap-2 text-sm">
               <input type="hidden" name="txPage" value={String(txPage)} />
@@ -410,15 +423,15 @@ export default async function AdminPage({
                 defaultValue={emailStatus ?? ""}
                 className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-sm outline-none ring-orange-500 focus:ring"
               >
-                <option value="">All</option>
-                <option value="sent">Sent</option>
-                <option value="failed">Failed</option>
+                <option value="">{t("admin.all")}</option>
+                <option value="sent">{t("admin.sent")}</option>
+                <option value="failed">{t("admin.failed")}</option>
               </select>
               <button
                 type="submit"
                 className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-medium hover:bg-stone-100"
               >
-                Filter
+                {t("admin.filter")}
               </button>
               {emailStatus && (
                 <Link
@@ -428,7 +441,7 @@ export default async function AdminPage({
                   })}
                   className="text-xs text-stone-500 underline"
                 >
-                  Clear
+                  {t("admin.clear")}
                 </Link>
               )}
             </form>
@@ -437,10 +450,10 @@ export default async function AdminPage({
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-stone-500">
                 <tr>
-                  <th className="py-2 pr-3">Recipient</th>
-                  <th className="py-2 pr-3">QR</th>
-                  <th className="py-2 pr-3">Status</th>
-                  <th className="py-2">Date</th>
+                  <th className="py-2 pr-3">{t("admin.recipient")}</th>
+                  <th className="py-2 pr-3">{t("admin.qr")}</th>
+                  <th className="py-2 pr-3">{t("admin.status")}</th>
+                  <th className="py-2">{t("admin.date")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -450,7 +463,7 @@ export default async function AdminPage({
                       colSpan={4}
                       className="py-4 text-center text-sm text-stone-400"
                     >
-                      No email logs found.
+                      {t("admin.noEmailLogs")}
                     </td>
                   </tr>
                 ) : null}
@@ -469,11 +482,11 @@ export default async function AdminPage({
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge[log.status] ?? "bg-stone-100 text-stone-600"}`}
                       >
-                        {log.status}
+                        {localizeStatus(log.status)}
                       </span>
                     </td>
                     <td className="py-2 text-xs text-stone-500">
-                      {new Date(log.createdAt).toLocaleString()}
+                      {formatDateTime(log.createdAt)}
                     </td>
                   </tr>
                 ))}

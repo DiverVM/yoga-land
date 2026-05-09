@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { QrScanner } from "@/components/qr-scanner";
+import { t } from "@/i18n";
 
 export default function ScanPage() {
   return (
@@ -10,13 +11,12 @@ export default function ScanPage() {
             href="/"
             className="inline-flex items-center gap-1 text-xs font-medium text-stone-500 hover:text-stone-800"
           >
-            ← Back
+            ← {t("common.back")}
           </Link>
-          <h1 className="text-3xl font-bold text-stone-900">QR Scanner</h1>
-          <p className="text-sm text-stone-600">
-            Point the camera at a Yoga Land QR code to accept it automatically,
-            or use a photo if Safari blocks live camera access on local HTTP.
-          </p>
+          <h1 className="text-3xl font-bold text-stone-900">
+            {t("scan.title")}
+          </h1>
+          <p className="text-sm text-stone-600">{t("scan.subtitle")}</p>
         </header>
 
         <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-xl">

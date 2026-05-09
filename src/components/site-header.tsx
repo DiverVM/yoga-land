@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { LogoutButton } from "@/components/logout-button";
+import { t } from "@/i18n";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
 export async function SiteHeader() {
@@ -13,7 +14,7 @@ export async function SiteHeader() {
     <header className="fixed inset-x-0 top-0 z-40 border-b border-stone-900/10 bg-white backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
         <Link href="/" className="font-semibold tracking-tight text-stone-900">
-          Yoga Land
+          {t("brand")}
         </Link>
 
         <nav className="flex items-center gap-2 text-sm">
@@ -21,7 +22,7 @@ export async function SiteHeader() {
             href="/"
             className="rounded-full border border-stone-300 px-3 py-1.5 font-medium text-stone-700 transition hover:bg-stone-100"
           >
-            Home
+            {t("common.home")}
           </Link>
 
           {isAdmin ? (
@@ -30,13 +31,13 @@ export async function SiteHeader() {
                 href="/scan"
                 className="rounded-full border border-amber-600 px-3 py-1.5 font-medium text-amber-700 transition hover:bg-amber-50"
               >
-                Scan QR
+                {t("header.scanQr")}
               </Link>
               <Link
                 href="/admin"
                 className="rounded-full border border-amber-600 px-3 py-1.5 font-medium text-amber-700 transition hover:bg-amber-50"
               >
-                Admin
+                {t("header.admin")}
               </Link>
               <LogoutButton />
             </>
@@ -45,7 +46,7 @@ export async function SiteHeader() {
               href="/login"
               className="rounded-full border border-stone-900 px-3 py-1.5 font-medium text-stone-900 transition hover:bg-stone-900 hover:text-white"
             >
-              Log in
+              {t("common.login")}
             </Link>
           )}
         </nav>

@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { t } from "@/i18n";
 import { toQrDataUrl } from "@/lib/qr-service";
 
 type SendQrEmailInput = {
@@ -38,7 +39,7 @@ function escapeHtml(value: string) {
 }
 
 function formatPrice(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("ru-BY", {
     style: "currency",
     currency,
   }).format(amount);
@@ -50,7 +51,7 @@ function formatTransactionDate(value: string) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("ru-BY", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
@@ -80,8 +81,8 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
   <div style="font-family: Arial, sans-serif; color: #1c1917; line-height: 1.6; background: #f5f5f4; padding: 24px;">
     <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 20px; padding: 32px; border: 1px solid #e7e5e4;">
       <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #ea580c;">Yoga Land</p>
-      <h2 style="margin: 0 0 12px; font-size: 28px; line-height: 1.2;">Thank you for buying yoga with us</h2>
-      <p style="margin: 0 0 24px; color: #57534e;">Your purchase is confirmed. Please show the QR code below when needed for your booking.</p>
+      <h2 style="margin: 0 0 12px; font-size: 28px; line-height: 1.2;">${t("email.title")}</h2>
+      <p style="margin: 0 0 24px; color: #57534e;">${t("email.subtitle")}</p>
 
       <div style="margin: 0 0 24px; text-align: center;">
         <img
@@ -94,15 +95,15 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
       </div>
 
       <div style="margin: 0 0 24px; border-radius: 16px; background: #fafaf9; border: 1px solid #e7e5e4; padding: 20px;">
-        <p style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #1c1917;">Purchase details</p>
-        <p style="margin: 0 0 6px; color: #44403c;"><strong>Course:</strong> ${productName}</p>
-        <p style="margin: 0 0 6px; color: #44403c;"><strong>Price:</strong> ${formattedPrice}</p>
-        <p style="margin: 0 0 6px; color: #44403c;"><strong>Transaction:</strong> ${transactionId}</p>
-        <p style="margin: 0 0 6px; color: #44403c;"><strong>Purchased at:</strong> ${formattedDate}</p>
-        <p style="margin: 0; color: #44403c;"><strong>QR ID:</strong> ${qrId}</p>
+        <p style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #1c1917;">${t("email.detailsTitle")}</p>
+        <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.course")}:</strong> ${productName}</p>
+        <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.price")}:</strong> ${formattedPrice}</p>
+        <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.transaction")}:</strong> ${transactionId}</p>
+        <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.purchasedAt")}:</strong> ${formattedDate}</p>
+        <p style="margin: 0; color: #44403c;"><strong>${t("email.qrId")}:</strong> ${qrId}</p>
       </div>
 
-      <p style="margin: 0; font-size: 13px; color: #78716c;">Please keep this email for your records. This message contains your customer QR code and transaction information.</p>
+      <p style="margin: 0; font-size: 13px; color: #78716c;">${t("email.footer")}</p>
     </div>
   </div>
   `;
@@ -110,17 +111,17 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
 
 function buildEmailText(input: SendQrEmailInput): string {
   return [
-    "Thank you for buying yoga with Yoga Land.",
+    t("email.textIntro"),
     "",
-    "Your purchase is confirmed.",
+    t("email.textConfirmed"),
     "",
-    `Course: ${input.productName}`,
-    `Price: ${formatPrice(input.amount, input.currency)}`,
-    `Transaction: ${input.transactionId}`,
-    `Purchased at: ${formatTransactionDate(input.transactionDate)}`,
-    `QR ID: ${input.qrId}`,
+    `${t("email.course")}: ${input.productName}`,
+    `${t("email.price")}: ${formatPrice(input.amount, input.currency)}`,
+    `${t("email.transaction")}: ${input.transactionId}`,
+    `${t("email.purchasedAt")}: ${formatTransactionDate(input.transactionDate)}`,
+    `${t("email.qrId")}: ${input.qrId}`,
     "",
-    "Please use the QR code included in the HTML version of this email when needed.",
+    t("email.textUseQr"),
   ].join("\n");
 }
 
@@ -137,7 +138,7 @@ export async function sendQrEmail(
     const result = await resend.emails.send({
       from,
       to: input.to,
-      subject: `Your Yoga Land QR for ${input.productName}`,
+      subject: t("email.subject", { course: input.productName }),
       html: buildEmailHtml(input, qrImageCid),
       text: buildEmailText(input),
       attachments: [
