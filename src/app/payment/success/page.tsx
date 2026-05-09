@@ -27,7 +27,7 @@ export default async function SuccessPage({ searchParams }: Props) {
   const qrDataUrl = await toQrDataUrl(qrRecord.qrUrl);
 
   return (
-    <div className="min-h-screen bg-stone-100 px-4 py-10">
+    <div className="min-h-screen bg-stone-100 px-4 py-24">
       <main className="mx-auto w-full max-w-3xl space-y-6 rounded-3xl bg-white p-6 shadow-xl">
         <header className="space-y-2">
           <p className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold tracking-wide text-green-700 uppercase">

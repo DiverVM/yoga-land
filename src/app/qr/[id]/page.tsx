@@ -27,7 +27,7 @@ export default async function QrDetailsPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-amber-50 px-4 py-10">
+    <div className="min-h-screen bg-amber-50 px-4 py-24">
       <main className="mx-auto w-full max-w-4xl space-y-5 rounded-3xl bg-white p-6 shadow-xl">
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-stone-900">QR Details</h1>
