@@ -9,7 +9,7 @@ export default function ScanPage() {
         <header className="space-y-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-xs font-medium text-stone-500 hover:text-stone-800"
+            className="inline-flex items-center gap-1 text-xs link-strong"
           >
             ← {t("common.back")}
           </Link>

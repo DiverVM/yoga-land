@@ -21,6 +21,8 @@ const resources = {
       header: {
         scanQr: "Сканировать QR",
         admin: "Админ",
+        openMenu: "Открыть меню",
+        closeMenu: "Закрыть меню",
       },
       checkout: {
         title: "Покупка курса",
@@ -37,6 +39,10 @@ const resources = {
         processing: "Обработка…",
         selectCourse: "Выберите курс.",
         checkoutFailed: "Ошибка оформления заказа",
+        paymentFailedTitle: "Оплата не прошла",
+        paymentFailedBanner:
+          "Платеж отклонен. Ничего не списано, попробуйте снова.",
+        paymentFailedTransaction: "Номер транзакции: {{id}}",
       },
       login: {
         badge: "Доступ администратора",
@@ -80,13 +86,11 @@ const resources = {
       qrActions: {
         copied: "URL QR скопирован в буфер обмена.",
         pdfTitle: "QR-код Yoga Land",
-        pdfDownloaded: "PDF скачан.",
         pdfFailed: "Не удалось создать PDF.",
         openedTab: "URL QR открыт в новой вкладке.",
         enterEmail: "Сначала введите email.",
         emailFailed: "Ошибка отправки email",
-        emailSent: "Email отправлен и записан в лог.",
-        copy: "Копировать",
+        emailSent: "Email отправлен",
         generatingPdf: "Генерация PDF…",
         downloadPdf: "Скачать PDF",
         openInTab: "Открыть в новой вкладке",
@@ -98,8 +102,11 @@ const resources = {
         successBadge: "Оплата успешна",
         successTitle: "Ваш QR-код готов",
         transactionFor: "Транзакция {{id}} на сумму {{amount}}",
-        qrOpensUrl: "QR открывает этот URL:",
-        openQrDetails: "Открыть страницу деталей QR",
+        successSubtitle:
+          "Спасибо за покупку. Сохраните QR-код и покажите его при посещении.",
+        nextStepsTitle: "Что делать дальше",
+        nextStepsBody:
+          "Скачайте QR в PDF или отправьте его на email, чтобы он всегда был под рукой.",
         failedBadge: "Оплата не прошла",
         failedTitle: "Транзакция не завершена",
         transactionId: "ID транзакции: {{id}}",

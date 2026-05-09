@@ -59,7 +59,7 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
     }
   }
 
-  const disabled = isSubmitting || status !== "pending";
+  const disabled = isSubmitting;
 
   return (
     <div className="space-y-3 rounded-xl border border-stone-200 p-4">
@@ -67,24 +67,26 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
         {t("qrDecision.currentDecision")}:{" "}
         <span className="font-semibold text-stone-900">{statusLabel}</span>
       </p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => submitDecision("accept")}
-          className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {t("qrDecision.accept")}
-        </button>
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => submitDecision("decline")}
-          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {t("qrDecision.decline")}
-        </button>
-      </div>
+      {status === "pending" ? (
+        <div className="grid gap-2 sm:grid-cols-2">
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => submitDecision("accept")}
+            className="btn-secondary px-4 py-2 text-sm"
+          >
+            {t("qrDecision.accept")}
+          </button>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => submitDecision("decline")}
+            className="btn-secondary px-4 py-2 text-sm"
+          >
+            {t("qrDecision.decline")}
+          </button>
+        </div>
+      ) : null}
       {message ? (
         <p className="rounded-lg bg-stone-100 px-3 py-2 text-sm text-stone-700">
           {message}

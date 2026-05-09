@@ -75,7 +75,7 @@ function Pagination({
       {page > 1 ? (
         <Link
           href={adminHref(current, { [pageParam]: String(page - 1) })}
-          className="rounded-lg border border-stone-300 px-3 py-1.5 font-medium text-stone-700 hover:bg-stone-100"
+          className="btn-secondary px-3 py-1.5"
         >
           {t("admin.prev")}
         </Link>
@@ -90,7 +90,7 @@ function Pagination({
       {page < totalPages ? (
         <Link
           href={adminHref(current, { [pageParam]: String(page + 1) })}
-          className="rounded-lg border border-stone-300 px-3 py-1.5 font-medium text-stone-700 hover:bg-stone-100"
+          className="btn-secondary px-3 py-1.5"
         >
           {t("admin.next")}
         </Link>
@@ -169,10 +169,7 @@ export default async function AdminPage({
               </h1>
               <p className="text-sm text-stone-600">{t("admin.subtitle")}</p>
             </div>
-            <Link
-              href="/"
-              className="rounded-full border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
-            >
+            <Link href="/" className="btn-secondary px-4 py-2 text-sm">
               {t("common.backToLanding")}
             </Link>
           </div>
@@ -204,10 +201,7 @@ export default async function AdminPage({
                 <option value="success">{t("admin.success")}</option>
                 <option value="failed">{t("admin.failed")}</option>
               </select>
-              <button
-                type="submit"
-                className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-medium hover:bg-stone-100"
-              >
+              <button type="submit" className="btn-secondary px-3 py-1.5">
                 {t("admin.filter")}
               </button>
               {txStatus && (
@@ -216,7 +210,7 @@ export default async function AdminPage({
                     txStatus: undefined,
                     txPage: "1",
                   })}
-                  className="text-xs text-stone-500 underline"
+                  className="text-xs link-strong"
                 >
                   {t("admin.clear")}
                 </Link>
@@ -318,10 +312,7 @@ export default async function AdminPage({
                 <option value="accepted">{t("admin.accepted")}</option>
                 <option value="declined">{t("admin.declined")}</option>
               </select>
-              <button
-                type="submit"
-                className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-medium hover:bg-stone-100"
-              >
+              <button type="submit" className="btn-secondary px-3 py-1.5">
                 {t("admin.filter")}
               </button>
               {qrDecision && (
@@ -330,7 +321,7 @@ export default async function AdminPage({
                     qrDecision: undefined,
                     qrPage: "1",
                   })}
-                  className="text-xs text-stone-500 underline"
+                  className="text-xs link-strong"
                 >
                   {t("admin.clear")}
                 </Link>
@@ -427,10 +418,7 @@ export default async function AdminPage({
                 <option value="sent">{t("admin.sent")}</option>
                 <option value="failed">{t("admin.failed")}</option>
               </select>
-              <button
-                type="submit"
-                className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-medium hover:bg-stone-100"
-              >
+              <button type="submit" className="btn-secondary px-3 py-1.5">
                 {t("admin.filter")}
               </button>
               {emailStatus && (
@@ -439,7 +427,7 @@ export default async function AdminPage({
                     emailStatus: undefined,
                     emailPage: "1",
                   })}
-                  className="text-xs text-stone-500 underline"
+                  className="text-xs link-strong"
                 >
                   {t("admin.clear")}
                 </Link>

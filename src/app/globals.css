@@ -24,3 +24,91 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
 }
+
+.btn-primary {
+  border: 1px solid #1c1917;
+  border-radius: 0.75rem;
+  background: #1c1917;
+  color: #fafaf9;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #292524;
+  border-color: #292524;
+}
+
+.btn-secondary {
+  border: 1px solid #1c1917;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #0c0a09;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #1c1917;
+  color: #fafaf9;
+}
+
+.btn-accent {
+  border: 1px solid #c2410c;
+  border-radius: 0.75rem;
+  background: #c2410c;
+  color: #0c0a09;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-accent:hover {
+  background: #9a3412;
+  border-color: #9a3412;
+  color: #fff7ed;
+}
+
+.btn-danger {
+  border: 1px solid #b91c1c;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #7f1d1d;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  color: #fff1f2;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-accent:disabled,
+.btn-danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.link-strong {
+  color: #0c0a09;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-strong:hover {
+  color: #292524;
+}

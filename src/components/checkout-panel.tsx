@@ -8,7 +8,10 @@ import type { Product } from "@/lib/types";
 
 type CheckoutResponse = {
   status: "success" | "failed";
-  redirectUrl: string;
+  redirectUrl?: string;
+  message?: string;
+  details?: string;
+  transactionId?: string;
 };
 
 type CheckoutPanelProps = {
@@ -21,6 +24,10 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
   const [mode, setMode] = useState<"auto" | "success" | "failed">("auto");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentFailure, setPaymentFailure] = useState<{
+    message: string;
+    transactionId?: string;
+  } | null>(null);
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === productId),
@@ -34,6 +41,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
     }
 
     setError(null);
+    setPaymentFailure(null);
     setIsLoading(true);
 
     try {
@@ -57,6 +65,19 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         throw new Error(
           data.details ?? data.error ?? t("checkout.checkoutFailed"),
         );
+      }
+
+      if (data.status === "failed") {
+        setPaymentFailure({
+          message:
+            data.details ?? data.message ?? t("checkout.paymentFailedBanner"),
+          transactionId: data.transactionId,
+        });
+        return;
+      }
+
+      if (!data.redirectUrl) {
+        throw new Error(t("checkout.checkoutFailed"));
       }
 
       router.push(data.redirectUrl);
@@ -134,11 +155,25 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         </div>
       ) : null}
 
+      {paymentFailure ? (
+        <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <p className="font-semibold">{t("checkout.paymentFailedTitle")}</p>
+          <p className="mt-1">{paymentFailure.message}</p>
+          {paymentFailure.transactionId ? (
+            <p className="mt-1 text-xs text-red-700">
+              {t("checkout.paymentFailedTransaction", {
+                id: paymentFailure.transactionId,
+              })}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <button
         type="button"
         onClick={handlePay}
         disabled={isLoading || products.length === 0}
-        className="w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
+        className="btn-primary w-full px-4 py-3 text-sm"
       >
         {isLoading ? t("checkout.processing") : t("checkout.payNow")}
       </button>

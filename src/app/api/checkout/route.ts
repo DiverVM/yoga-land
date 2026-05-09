@@ -82,7 +82,10 @@ export async function POST(request: Request) {
     return ok(
       {
         status: "failed",
-        redirectUrl: `/payment/failed?transactionId=${transaction.id}`,
+        message: "Оплата не прошла",
+        details:
+          "Платеж отклонен. Ничего не списано, можно попробовать еще раз.",
+        transactionId: transaction.id,
         transaction: failedTransaction,
       },
       201,

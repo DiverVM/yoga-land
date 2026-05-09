@@ -44,6 +44,9 @@ export default async function SuccessPage({ searchParams }: Props) {
               amount: formatMoney(transaction.amount, transaction.currency),
             })}
           </p>
+          <p className="text-sm text-stone-700">
+            {t("payment.successSubtitle")}
+          </p>
         </header>
 
         <section className="grid gap-6 md:grid-cols-[220px_1fr]">
@@ -58,26 +61,19 @@ export default async function SuccessPage({ searchParams }: Props) {
             />
           </div>
 
-          <div className="space-y-3">
-            <p className="text-sm text-stone-700">{t("payment.qrOpensUrl")}</p>
-            <p className="break-all rounded-lg bg-stone-100 px-3 py-2 text-sm text-stone-700">
-              {qrRecord.qrUrl}
+          <div className="space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+            <p className="text-sm font-semibold text-emerald-900">
+              {t("payment.nextStepsTitle")}
+            </p>
+            <p className="text-sm text-emerald-800">
+              {t("payment.nextStepsBody")}
             </p>
             <QrActions qrId={qrRecord.id} qrUrl={qrRecord.qrUrl} />
           </div>
         </section>
 
         <div className="flex flex-wrap gap-3">
-          <Link
-            href={`/qr/${qrRecord.id}`}
-            className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
-          >
-            {t("payment.openQrDetails")}
-          </Link>
-          <Link
-            href="/"
-            className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100"
-          >
+          <Link href="/" className="btn-secondary px-4 py-2 text-sm">
             {t("common.backToLanding")}
           </Link>
         </div>

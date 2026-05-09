@@ -1,21 +1,12 @@
-import Link from "next/link";
-import { cookies } from "next/headers";
 import { CheckoutPanel } from "@/components/checkout-panel";
 import { t } from "@/i18n";
 import { listProducts } from "@/lib/repositories";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
 export default async function Home() {
-  const [products, cookieStore] = await Promise.all([
-    listProducts(),
-    cookies(),
-  ]);
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  const isAdmin = session?.role === "admin";
+  const products = await listProducts();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed_0%,_#ffedd5_35%,_#fed7aa_70%,_#fdba74_100%)] px-4 py-12 text-stone-900">
+    <div className="relative flex min-h-screen items-start justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed_0%,_#ffedd5_35%,_#fed7aa_70%,_#fdba74_100%)] px-4 pb-12 pt-28 text-stone-900 md:items-center md:py-12">
       <div className="pointer-events-none absolute -left-20 top-12 h-60 w-60 rounded-full bg-orange-300/35 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 bottom-8 h-72 w-72 rounded-full bg-amber-400/35 blur-3xl" />
 

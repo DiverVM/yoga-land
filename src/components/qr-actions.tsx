@@ -18,11 +18,6 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
 
   const canSendEmail = useMemo(() => email.trim().length > 0, [email]);
 
-  async function handleCopy() {
-    await navigator.clipboard.writeText(qrUrl);
-    setMessage(t("qrActions.copied"));
-  }
-
   async function handleDownloadPdf() {
     setIsPdfLoading(true);
     try {
@@ -43,18 +38,11 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
       pdf.setFontSize(10);
       pdf.text(qrUrl, 40, 300, { maxWidth: 520 });
       pdf.save(`qr-${qrId}.pdf`);
-
-      setMessage(t("qrActions.pdfDownloaded"));
     } catch {
       setMessage(t("qrActions.pdfFailed"));
     } finally {
       setIsPdfLoading(false);
     }
-  }
-
-  function handleOpen() {
-    window.open(qrUrl, "_blank", "noopener,noreferrer");
-    setMessage(t("qrActions.openedTab"));
   }
 
   async function handleSendEmail() {
@@ -100,14 +88,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
     <div className="space-y-4">
       <div className="grid gap-2 sm:grid-cols-2">
         <button
-          className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white"
-          onClick={handleCopy}
-          type="button"
-        >
-          {t("qrActions.copy")}
-        </button>
-        <button
-          className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn-secondary px-4 py-2 text-sm"
           onClick={handleDownloadPdf}
           type="button"
           disabled={isPdfLoading}
@@ -115,13 +96,6 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
           {isPdfLoading
             ? t("qrActions.generatingPdf")
             : t("qrActions.downloadPdf")}
-        </button>
-        <button
-          className="rounded-lg border border-stone-900 px-4 py-2 text-sm font-medium transition hover:bg-stone-900 hover:text-white sm:col-span-2"
-          onClick={handleOpen}
-          type="button"
-        >
-          {t("qrActions.openInTab")}
         </button>
       </div>
 
@@ -132,7 +106,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
             type="email"
-            className="flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
+            className="flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-500 outline-none ring-orange-500 focus:ring"
             placeholder="user@example.com"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -141,7 +115,7 @@ export function QrActions({ qrId, qrUrl }: QrActionsProps) {
             type="button"
             onClick={handleSendEmail}
             disabled={isEmailLoading}
-            className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-70"
+            className="btn-secondary px-4 py-2 text-sm"
           >
             {isEmailLoading ? t("qrActions.sending") : t("qrActions.send")}
           </button>
