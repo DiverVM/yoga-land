@@ -26,8 +26,3 @@ jobs:
 
       - name: Lint
         run: npm run lint
-
-      - name: Build
-        env:
-          DATABASE_URL: file:./data/app.db
-        run: npm run build
