@@ -23,7 +23,9 @@ async function runSeeder(relativeFile: string) {
         resolve();
         return;
       }
-      reject(new Error(`Seeder failed (${relativeFile}) with exit code ${code}`));
+      reject(
+        new Error(`Seeder failed (${relativeFile}) with exit code ${code}`),
+      );
     });
   });
 }
