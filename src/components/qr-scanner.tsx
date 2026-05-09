@@ -350,8 +350,8 @@ export function QrScanner() {
               className="pointer-events-none absolute opacity-0"
             />
 
-            {/* Aiming overlay — shown while actively scanning */}
-            {!result && !processing && (
+            {/* Keep aiming overlay visible between scans. */}
+            {!processing && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <div className="h-48 w-48 rounded-lg border-2 border-amber-400 opacity-80 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
               </div>

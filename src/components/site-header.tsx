@@ -1,48 +1,13 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { cookies } from "next/headers";
 import { LogoutButton } from "@/components/logout-button";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
-type AuthState = "loading" | "guest" | "admin";
-
-export function SiteHeader() {
-  const pathname = usePathname();
-  const [authState, setAuthState] = useState<AuthState>("loading");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadMe() {
-      try {
-        const res = await fetch("/api/auth/me", { cache: "no-store" });
-        if (!isMounted) return;
-        if (!res.ok) {
-          setAuthState("guest");
-          return;
-        }
-
-        const data = (await res.json()) as { role?: string };
-        setAuthState(data.role === "admin" ? "admin" : "guest");
-      } catch {
-        if (isMounted) setAuthState("guest");
-      }
-    }
-
-    void loadMe();
-
-    function handleAuthChanged() {
-      void loadMe();
-    }
-
-    window.addEventListener("auth-changed", handleAuthChanged);
-
-    return () => {
-      isMounted = false;
-      window.removeEventListener("auth-changed", handleAuthChanged);
-    };
-  }, [pathname]);
+export async function SiteHeader() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const session = token ? await verifySessionToken(token) : null;
+  const isAdmin = session?.role === "admin";
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-stone-900/10 bg-white backdrop-blur">
@@ -59,15 +24,14 @@ export function SiteHeader() {
             Home
           </Link>
 
-          <Link
-            href="/scan"
-            className="rounded-full border border-amber-600 px-3 py-1.5 font-medium text-amber-700 transition hover:bg-amber-50"
-          >
-            Scan QR
-          </Link>
-
-          {authState === "admin" ? (
+          {isAdmin ? (
             <>
+              <Link
+                href="/scan"
+                className="rounded-full border border-amber-600 px-3 py-1.5 font-medium text-amber-700 transition hover:bg-amber-50"
+              >
+                Scan QR
+              </Link>
               <Link
                 href="/admin"
                 className="rounded-full border border-amber-600 px-3 py-1.5 font-medium text-amber-700 transition hover:bg-amber-50"
@@ -76,17 +40,13 @@ export function SiteHeader() {
               </Link>
               <LogoutButton />
             </>
-          ) : authState === "guest" ? (
+          ) : (
             <Link
               href="/login"
               className="rounded-full border border-stone-900 px-3 py-1.5 font-medium text-stone-900 transition hover:bg-stone-900 hover:text-white"
             >
               Log in
             </Link>
-          ) : (
-            <span className="rounded-full border border-stone-200 px-3 py-1.5 text-stone-400">
-              Checking...
-            </span>
           )}
         </nav>
       </div>

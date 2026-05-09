@@ -1,7 +1,18 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { CheckoutPanel } from "@/components/checkout-panel";
+import { listProducts } from "@/lib/repositories";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
-export default function Home() {
+export default async function Home() {
+  const [products, cookieStore] = await Promise.all([
+    listProducts(),
+    cookies(),
+  ]);
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const session = token ? await verifySessionToken(token) : null;
+  const isAdmin = session?.role === "admin";
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed_0%,_#ffedd5_35%,_#fed7aa_70%,_#fdba74_100%)] px-4 py-12 text-stone-900">
       <div className="pointer-events-none absolute -left-20 top-12 h-60 w-60 rounded-full bg-orange-300/35 blur-3xl" />
@@ -19,18 +30,20 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3 text-sm">
-            <Link
-              href="/admin"
-              className="rounded-full border border-stone-900 px-4 py-2 font-medium transition hover:bg-stone-900 hover:text-white"
-            >
-              Admin Panel
-            </Link>
-          </div>
+          {isAdmin ? (
+            <div className="flex flex-wrap gap-3 text-sm">
+              <Link
+                href="/admin"
+                className="rounded-full border border-stone-900 px-4 py-2 font-medium transition hover:bg-stone-900 hover:text-white"
+              >
+                Admin Panel
+              </Link>
+            </div>
+          ) : null}
         </section>
 
         <section className="rounded-2xl border border-stone-900/10 bg-white p-5 shadow-lg shadow-stone-900/5 md:p-6">
-          <CheckoutPanel />
+          <CheckoutPanel products={products} />
         </section>
       </main>
     </div>

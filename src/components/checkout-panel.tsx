@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 
@@ -9,26 +9,16 @@ type CheckoutResponse = {
   redirectUrl: string;
 };
 
-export function CheckoutPanel() {
+type CheckoutPanelProps = {
+  products: Product[];
+};
+
+export function CheckoutPanel({ products }: CheckoutPanelProps) {
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-  const [productId, setProductId] = useState("");
+  const [productId, setProductId] = useState(products[0]?.id ?? "");
   const [mode, setMode] = useState<"auto" | "success" | "failed">("auto");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data: { products?: Product[] }) => {
-        const list = data.products ?? [];
-        setProducts(list);
-        setProductId(list[0]?.id ?? "");
-      })
-      .catch(() => {})
-      .finally(() => setProductsLoading(false));
-  }, []);
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === productId),
@@ -88,9 +78,9 @@ export function CheckoutPanel() {
 
       <label className="block space-y-2">
         <span className="text-sm font-medium text-stone-700">Course</span>
-        {productsLoading ? (
+        {products.length === 0 ? (
           <div className="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2 text-sm text-stone-400">
-            Loading courses…
+            No active courses available.
           </div>
         ) : (
           <select
@@ -143,7 +133,7 @@ export function CheckoutPanel() {
       <button
         type="button"
         onClick={handlePay}
-        disabled={isLoading || productsLoading}
+        disabled={isLoading || products.length === 0}
         className="w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isLoading ? "Processing…" : "Pay now"}
