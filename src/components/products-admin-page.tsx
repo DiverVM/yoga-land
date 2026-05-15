@@ -49,31 +49,51 @@ async function revalidateProductsCache() {
 async function updateProductAction(formData: FormData) {
   "use server";
 
-  const id = String(formData.get("id") ?? "").trim();
-  const name = String(formData.get("name") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
-  const priceRaw = Number(formData.get("price"));
-  const isVisible = formData.get("isVisible") === "on";
+  const productIds = Array.from(
+    new Set(formData.getAll("productId").map(String)),
+  )
+    .map((value) => value.trim())
+    .filter(Boolean);
 
-  if (!id) return;
+  if (productIds.length === 0) return;
 
-  const validation = validateProductUpdatePayload({
-    name,
-    description,
-    price: priceRaw,
-    currencyCode: "933",
-    isVisible,
+  const updates = productIds.map((id) => {
+    const name = String(formData.get(`name-${id}`) ?? "").trim();
+    const description = String(formData.get(`description-${id}`) ?? "").trim();
+    const priceRaw = Number(formData.get(`price-${id}`));
+    const isVisible = formData.get(`isVisible-${id}`) === "on";
+
+    const validation = validateProductUpdatePayload({
+      name,
+      description,
+      price: priceRaw,
+      currencyCode: "933",
+      isVisible,
+    });
+
+    if (!validation.valid) {
+      return null;
+    }
+
+    return {
+      id,
+      product: validation.product,
+    };
   });
 
-  if (!validation.valid) return;
+  if (updates.some((update) => update === null)) return;
 
-  await updateProduct(id, {
-    name: validation.product.name,
-    description: validation.product.description,
-    price: validation.product.price,
-    currencyCode: validation.product.currencyCode,
-    active: validation.product.isVisible,
-  });
+  for (const update of updates) {
+    if (!update) continue;
+
+    await updateProduct(update.id, {
+      name: update.product.name,
+      description: update.product.description,
+      price: update.product.price,
+      currencyCode: update.product.currencyCode,
+      active: update.product.isVisible,
+    });
+  }
 
   await revalidateProductsCache();
   redirect("/admin/products?updated=1");
@@ -123,21 +143,21 @@ export async function ProductsAdminPage({
         <section className="rounded-3xl border border-stone-800/10 bg-white/85 p-5 shadow-lg shadow-stone-900/5 md:p-6">
           {isUpdated ? (
             <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-              {t("admin.productUpdated")}
+              {t("admin.productsUpdated")}
             </div>
           ) : null}
 
           {products.length === 0 ? (
             <p className="text-sm text-stone-500">{t("admin.noProducts")}</p>
           ) : (
-            <ul className="space-y-4">
-              {products.map((product) => (
-                <li
-                  key={product.id}
-                  className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
-                >
-                  <form action={updateProductAction} className="space-y-3">
-                    <input type="hidden" name="id" value={product.id} />
+            <form action={updateProductAction} className="space-y-4">
+              <ul className="space-y-4">
+                {products.map((product) => (
+                  <li
+                    key={product.id}
+                    className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
+                  >
+                    <input type="hidden" name="productId" value={product.id} />
                     <div className="text-xs text-stone-500">{product.id}</div>
                     <div className="grid gap-3 md:grid-cols-2">
                       <label className="space-y-1 text-sm">
@@ -145,7 +165,7 @@ export async function ProductsAdminPage({
                           {t("admin.productName")}
                         </span>
                         <input
-                          name="name"
+                          name={`name-${product.id}`}
                           type="text"
                           defaultValue={product.name}
                           className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
@@ -157,7 +177,7 @@ export async function ProductsAdminPage({
                           {t("admin.productPrice")}
                         </span>
                         <input
-                          name="price"
+                          name={`price-${product.id}`}
                           type="number"
                           min={0.01}
                           step="0.01"
@@ -173,7 +193,7 @@ export async function ProductsAdminPage({
                         {t("admin.productDescription")}
                       </span>
                       <input
-                        name="description"
+                        name={`description-${product.id}`}
                         type="text"
                         defaultValue={product.description}
                         className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
@@ -183,7 +203,7 @@ export async function ProductsAdminPage({
 
                     <label className="inline-flex items-center gap-2 text-sm text-stone-700">
                       <input
-                        name="isVisible"
+                        name={`isVisible-${product.id}`}
                         type="checkbox"
                         defaultChecked={product.isVisible}
                       />
@@ -197,19 +217,19 @@ export async function ProductsAdminPage({
                       <span>•</span>
                       <span>{formatDateTime(product.updatedAt)}</span>
                     </div>
+                  </li>
+                ))}
+              </ul>
 
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="submit"
-                        className="btn-secondary px-3 py-1.5 text-sm"
-                      >
-                        {t("admin.updateProduct")}
-                      </button>
-                    </div>
-                  </form>
-                </li>
-              ))}
-            </ul>
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  className="btn-secondary px-4 py-2 text-sm"
+                >
+                  {t("admin.updateAllProducts")}
+                </button>
+              </div>
+            </form>
           )}
         </section>
       </main>
