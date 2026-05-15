@@ -66,7 +66,6 @@ export async function registerOrder(input: {
     });
 
     const data = (await response.json()) as Record<string, unknown>;
-    console.log("registerOrder response:", data);
 
     if (
       !response.ok ||
@@ -120,7 +119,6 @@ export async function getOrderStatus(
     });
 
     const data = (await response.json()) as Record<string, unknown>;
-    console.log("getOrderStatus response:", data);
 
     if (
       !response.ok ||
