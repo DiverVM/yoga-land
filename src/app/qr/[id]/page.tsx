@@ -60,7 +60,7 @@ export default async function QrDetailsPage({ params }: Props) {
               </p>
               <p className="text-sm text-stone-900 whitespace-nowrap">
                 {t("qrDetails.amount")}:{" "}
-                {formatMoney(transaction.amount, transaction.currency)}
+                {formatMoney(transaction.amount, transaction.currencyCode)}
               </p>
               <p className="text-sm text-stone-900 whitespace-nowrap">
                 {t("qrDetails.paymentStatus")}:{" "}

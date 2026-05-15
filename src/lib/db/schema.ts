@@ -5,7 +5,7 @@ export const products = sqliteTable("products", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   price: integer("price").notNull(),
-  currency: text("currency", { enum: ["BYN"] }).notNull(),
+  currencyCode: text("currency_code", { enum: ["933"] }).notNull(),
   active: integer("active", { mode: "boolean" }).notNull().default(true),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
@@ -13,12 +13,14 @@ export const products = sqliteTable("products", {
 
 export const transactions = sqliteTable("transactions", {
   id: text("id").primaryKey(),
+  orderNumber: text("order_number").notNull(),
   productId: text("product_id").notNull(),
   amount: integer("amount").notNull(),
-  currency: text("currency", { enum: ["BYN"] }).notNull(),
+  currencyCode: text("currency_code", { enum: ["933"] }).notNull(),
   paymentStatus: text("payment_status", {
     enum: ["pending", "success", "failed"],
   }).notNull(),
+  orderId: text("order_id"),
   qrId: text("qr_id"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),

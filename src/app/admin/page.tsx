@@ -249,7 +249,7 @@ export default async function AdminPage({
                       {productNames.get(tx.productId) ?? tx.productId}
                     </td>
                     <td className="py-2 pr-3">
-                      {formatMoney(tx.amount, tx.currency)}
+                      {formatMoney(tx.amount, tx.currencyCode)}
                     </td>
                     <td className="py-2 pr-3">
                       <span

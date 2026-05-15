@@ -1,17 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { t } from "@/i18n";
 import { formatMoney } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 type CheckoutResponse = {
-  status: "success" | "failed";
-  redirectUrl?: string;
-  message?: string;
-  details?: string;
-  transactionId?: string;
+  status: "pending";
+  formUrl: string;
+  orderId: string;
+  transactionId: string;
 };
 
 type CheckoutPanelProps = {
@@ -19,15 +17,9 @@ type CheckoutPanelProps = {
 };
 
 export function CheckoutPanel({ products }: CheckoutPanelProps) {
-  const router = useRouter();
   const [productId, setProductId] = useState(products[0]?.id ?? "");
-  const [mode, setMode] = useState<"auto" | "success" | "failed">("success");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [paymentFailure, setPaymentFailure] = useState<{
-    message: string;
-    transactionId?: string;
-  } | null>(null);
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === productId),
@@ -41,7 +33,6 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
     }
 
     setError(null);
-    setPaymentFailure(null);
     setIsLoading(true);
 
     try {
@@ -52,7 +43,6 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         },
         body: JSON.stringify({
           productId,
-          mode,
         }),
       });
 
@@ -67,20 +57,12 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         );
       }
 
-      if (data.status === "failed") {
-        setPaymentFailure({
-          message:
-            data.details ?? data.message ?? t("checkout.paymentFailedBanner"),
-          transactionId: data.transactionId,
-        });
-        return;
-      }
-
-      if (!data.redirectUrl) {
+      if (!data.formUrl) {
         throw new Error(t("checkout.checkoutFailed"));
       }
 
-      router.push(data.redirectUrl);
+      // Redirect to Alfa payment form
+      window.location.href = data.formUrl;
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -115,28 +97,12 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
           >
             {products.map((product) => (
               <option key={product.id} value={product.id}>
-                {product.name} — {formatMoney(product.price, product.currency)}
+                {product.name} —{" "}
+                {formatMoney(product.price, product.currencyCode)}
               </option>
             ))}
           </select>
         )}
-      </label>
-
-      <label className="block space-y-2">
-        <span className="text-sm font-medium text-stone-700">
-          {t("checkout.paymentSimulation")}
-        </span>
-        <select
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
-          value={mode}
-          onChange={(event) =>
-            setMode(event.target.value as "auto" | "success" | "failed")
-          }
-        >
-          <option value="auto">{t("checkout.simulationAuto")}</option>
-          <option value="success">{t("checkout.simulationSuccess")}</option>
-          <option value="failed">{t("checkout.simulationFailed")}</option>
-        </select>
       </label>
 
       {selectedProduct ? (
@@ -144,7 +110,7 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
           <p className="mb-1 text-stone-600">{selectedProduct.description}</p>
           {t("checkout.total")}:{" "}
           <span className="font-bold">
-            {formatMoney(selectedProduct.price, selectedProduct.currency)}
+            {formatMoney(selectedProduct.price, selectedProduct.currencyCode)}
           </span>
         </div>
       ) : null}
@@ -152,20 +118,6 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
       {error ? (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
-        </div>
-      ) : null}
-
-      {paymentFailure ? (
-        <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
-          <p className="font-semibold">{t("checkout.paymentFailedTitle")}</p>
-          <p className="mt-1">{paymentFailure.message}</p>
-          {paymentFailure.transactionId ? (
-            <p className="mt-1 text-xs text-red-700">
-              {t("checkout.paymentFailedTransaction", {
-                id: paymentFailure.transactionId,
-              })}
-            </p>
-          ) : null}
         </div>
       ) : null}
 

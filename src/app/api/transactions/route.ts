@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { fail, ok, parseJsonBody } from "@/lib/api";
 import { createTransaction, listTransactions } from "@/lib/repositories";
 import { isPaymentStatus } from "@/lib/validation";
@@ -16,17 +17,21 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await parseJsonBody<CreateTransactionBody>(request);
   if (!body) {
-    return fail("Invalid JSON body", 400);
+    return fail(t("common.invalidJsonBody"), 400);
   }
 
   const validation = await validateProductId(body.productId);
   if (!validation.valid) {
-    return fail("Validation failed", 400, validation.message);
+    return fail(t("common.validationFailed"), 400, validation.message);
   }
 
   const paymentStatus = body.paymentStatus ?? "pending";
   if (!isPaymentStatus(paymentStatus)) {
-    return fail("Validation failed", 400, "paymentStatus is invalid");
+    return fail(
+      t("common.validationFailed"),
+      400,
+      t("validation.paymentStatusInvalid"),
+    );
   }
 
   const product = validation.product;
@@ -34,7 +39,7 @@ export async function POST(request: Request) {
   const transaction = await createTransaction({
     productId: product.id,
     amount: product.price,
-    currency: product.currency,
+    currencyCode: product.currencyCode,
     paymentStatus,
   });
 

@@ -10,7 +10,7 @@ type SeedProduct = {
   name: string;
   description: string;
   price: number;
-  currency: "BYN";
+  currencyCode: "933";
   active: boolean;
 };
 
@@ -21,7 +21,7 @@ const seedProducts: SeedProduct[] = [
     description:
       "Отличный старт в мире йоги. Подходит новичкам, которые хотят начать регулярную практику.",
     price: 19,
-    currency: "BYN",
+    currencyCode: "933",
     active: true,
   },
   {
@@ -30,7 +30,7 @@ const seedProducts: SeedProduct[] = [
     description:
       "Двухдневный ретрит для глубокого погружения в практику и восстановления баланса.",
     price: 79,
-    currency: "BYN",
+    currencyCode: "933",
     active: true,
   },
   {
@@ -39,7 +39,7 @@ const seedProducts: SeedProduct[] = [
     description:
       "Безлимитные занятия на целый месяц. Полный доступ к возможностям Yoga Land.",
     price: 129,
-    currency: "BYN",
+    currencyCode: "933",
     active: true,
   },
 ];
@@ -62,7 +62,7 @@ async function seed() {
             name: product.name,
             description: product.description,
             price: product.price,
-            currency: product.currency,
+            currencyCode: product.currencyCode,
             active: product.active,
             updatedAt: now,
           },

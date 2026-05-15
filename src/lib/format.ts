@@ -1,7 +1,12 @@
-export function formatMoney(amount: number, currency: string) {
+const DISPLAY_CURRENCY_BY_CODE: Record<string, string> = {
+  "933": "BYN",
+};
+
+export function formatMoney(amount: number, currencyCode: string) {
+  const displayCurrency = DISPLAY_CURRENCY_BY_CODE[currencyCode] ?? "BYN";
   return new Intl.NumberFormat("ru-BY", {
     style: "currency",
-    currency,
+    currency: displayCurrency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);

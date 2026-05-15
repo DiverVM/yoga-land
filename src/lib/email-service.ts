@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { t } from "@/i18n";
+import { formatMoney } from "@/lib/format";
 import { toQrDataUrl } from "@/lib/qr-service";
 
 type SendQrEmailInput = {
@@ -10,7 +11,7 @@ type SendQrEmailInput = {
   transactionDate: string;
   productName: string;
   amount: number;
-  currency: string;
+  currencyCode: string;
 };
 
 export type SendQrEmailResult =
@@ -36,13 +37,6 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
-}
-
-function formatPrice(amount: number, currency: string) {
-  return new Intl.NumberFormat("ru-BY", {
-    style: "currency",
-    currency,
-  }).format(amount);
 }
 
 function formatTransactionDate(value: string) {
@@ -72,7 +66,9 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
   const productName = escapeHtml(input.productName);
   const qrId = escapeHtml(input.qrId);
   const transactionId = escapeHtml(input.transactionId);
-  const formattedPrice = escapeHtml(formatPrice(input.amount, input.currency));
+  const formattedPrice = escapeHtml(
+    formatMoney(input.amount, input.currencyCode),
+  );
   const formattedDate = escapeHtml(
     formatTransactionDate(input.transactionDate),
   );
@@ -116,7 +112,7 @@ function buildEmailText(input: SendQrEmailInput): string {
     t("email.textConfirmed"),
     "",
     `${t("email.course")}: ${input.productName}`,
-    `${t("email.price")}: ${formatPrice(input.amount, input.currency)}`,
+    `${t("email.price")}: ${formatMoney(input.amount, input.currencyCode)}`,
     `${t("email.transaction")}: ${input.transactionId}`,
     `${t("email.purchasedAt")}: ${formatTransactionDate(input.transactionDate)}`,
     `${t("email.qrId")}: ${input.qrId}`,

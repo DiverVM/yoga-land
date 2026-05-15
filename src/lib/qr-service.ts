@@ -11,7 +11,7 @@ export type QrPayload = {
   productId: string;
   productName: string;
   amount: number;
-  currency: string;
+  currencyCode: string;
   paymentStatus: string;
   createdAt: string;
 };
@@ -24,7 +24,7 @@ export function buildQrPayload(input: BuildQrPayloadInput): QrPayload {
     productId: transaction.productId,
     productName,
     amount: transaction.amount,
-    currency: transaction.currency,
+    currencyCode: transaction.currencyCode,
     paymentStatus: transaction.paymentStatus,
     createdAt: transaction.createdAt,
   };

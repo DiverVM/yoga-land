@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     transactionDate: transaction.createdAt,
     productName: product.name,
     amount: transaction.amount,
-    currency: transaction.currency,
+    currencyCode: transaction.currencyCode,
   });
 
   const emailLog = await createEmailLog({

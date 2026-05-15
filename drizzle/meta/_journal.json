@@ -36,6 +36,27 @@
       "when": 1778323200000,
       "tag": "0004_russian_byn_update",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1778759759385,
+      "tag": "0005_workable_zemo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1778860800000,
+      "tag": "0006_currency_code_order_number",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1778864400000,
+      "tag": "0007_drop_currency_columns",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { ok, fail } from "@/lib/api";
+import { ok } from "@/lib/api";
 import {
   listTransactionsPaginated,
   listQrRecordsPaginated,

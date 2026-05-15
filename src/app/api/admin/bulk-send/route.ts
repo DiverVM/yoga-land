@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { headers } from "next/headers";
+import { t } from "@/i18n";
 import { fail, ok, parseJsonBody } from "@/lib/api";
 import { sendQrEmail } from "@/lib/email-service";
 import {
@@ -14,6 +14,7 @@ import {
   getProductById,
   updateTransaction,
 } from "@/lib/repositories";
+import { getRequestOrigin } from "@/lib/request-origin";
 import {
   isEmail,
   normalizeEmail,
@@ -37,55 +38,37 @@ type BulkSendResult = {
   error?: string;
 };
 
-function resolveOrigin(host: string | null): string {
-  if (process.env.APP_URL) {
-    return process.env.APP_URL;
-  }
-
-  if (!host) {
-    return "http://localhost:3000";
-  }
-
-  if (!/^[a-zA-Z0-9._:-]+$/.test(host)) {
-    return "http://localhost:3000";
-  }
-
-  if (host.includes("localhost") || host.startsWith("127.0.0.1")) {
-    return `http://${host}`;
-  }
-
-  return `https://${host}`;
-}
-
 export async function POST(request: Request) {
   const body = await parseJsonBody<BulkSendBody>(request);
   if (!body) {
-    return fail("Некорректное JSON-тело запроса", 400);
+    return fail(t("common.invalidJsonBody"), 400);
   }
 
   const itemValidation = validateBulkSendItems(body.items);
   if (!itemValidation.valid) {
-    return fail("Ошибка валидации", 400, itemValidation.message);
+    return fail(t("common.validationFailed"), 400, itemValidation.message);
   }
 
-  const origin = resolveOrigin((await headers()).get("host"));
+  const origin = await getRequestOrigin();
   const results: BulkSendResult[] = [];
 
   for (const item of itemValidation.items) {
     try {
       if (!isEmail(item.email)) {
-        throw new Error(`Некорректный email: ${item.email}`);
+        throw new Error(t("validation.invalidEmail", { email: item.email }));
       }
 
       const product = await getProductById(item.productId);
       if (!product) {
-        throw new Error(`Неизвестный productId: ${item.productId}`);
+        throw new Error(
+          t("validation.unknownProductId", { productId: item.productId }),
+        );
       }
 
       const transaction = await createTransaction({
         productId: product.id,
         amount: product.price,
-        currency: product.currency,
+        currencyCode: product.currencyCode,
         paymentStatus: "success",
       });
 
@@ -112,7 +95,7 @@ export async function POST(request: Request) {
         transactionDate: transaction.createdAt,
         productName: product.name,
         amount: transaction.amount,
-        currency: transaction.currency,
+        currencyCode: transaction.currencyCode,
       });
 
       await createEmailLog({
@@ -142,7 +125,8 @@ export async function POST(request: Request) {
       results.push({
         email: normalizeEmail(item.email ?? ""),
         ok: false,
-        error: error instanceof Error ? error.message : "Неизвестная ошибка",
+        error:
+          error instanceof Error ? error.message : t("common.unknownError"),
       });
     }
   }

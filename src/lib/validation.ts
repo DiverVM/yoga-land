@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import type { DecisionStatus, PaymentStatus } from "@/lib/types";
 
 export function isNonEmptyString(value: unknown): value is string {
@@ -35,7 +36,7 @@ export function validateBulkSendItems(items: unknown) {
   if (!Array.isArray(items)) {
     return {
       valid: false as const,
-      message: "Требуется список получателей",
+      message: t("validation.recipientsListRequired"),
     };
   }
 
@@ -53,14 +54,14 @@ export function validateBulkSendItems(items: unknown) {
   if (normalized.length < 1) {
     return {
       valid: false as const,
-      message: "Нужно минимум 1 email адрес",
+      message: t("validation.minOneEmail"),
     };
   }
 
   if (normalized.length > 10) {
     return {
       valid: false as const,
-      message: "Можно указать максимум 10 получателей",
+      message: t("validation.maxTenRecipients"),
     };
   }
 
@@ -73,21 +74,21 @@ export function validateBulkSendItems(items: unknown) {
     if (!item.productId) {
       return {
         valid: false as const,
-        message: "Выберите продукт для каждого email",
+        message: t("validation.productRequiredForEachEmail"),
       };
     }
 
     if (!item.email) {
       return {
         valid: false as const,
-        message: "Email не может быть пустым",
+        message: t("validation.emailRequired"),
       };
     }
 
     if (!isEmail(item.email)) {
       return {
         valid: false as const,
-        message: `Некорректный email: ${item.email}`,
+        message: t("validation.invalidEmail", { email: item.email }),
       };
     }
   }
@@ -103,7 +104,9 @@ export function validateBulkSendItems(items: unknown) {
   if (duplicates.length > 0) {
     return {
       valid: false as const,
-      message: `Повторяющаяся пара email+продукт: ${duplicates[0].email}`,
+      message: t("validation.duplicateEmailProduct", {
+        email: duplicates[0].email,
+      }),
     };
   }
 
@@ -117,7 +120,7 @@ export function validateEmailList(emails: unknown) {
   if (!Array.isArray(emails)) {
     return {
       valid: false as const,
-      message: "Требуется список email адресов",
+      message: t("validation.emailListRequired"),
     };
   }
 
@@ -129,14 +132,14 @@ export function validateEmailList(emails: unknown) {
   if (normalized.length < 1) {
     return {
       valid: false as const,
-      message: "Нужно минимум 1 email адрес",
+      message: t("validation.minOneEmail"),
     };
   }
 
   if (normalized.length > 10) {
     return {
       valid: false as const,
-      message: "Можно указать максимум 10 email адресов",
+      message: t("validation.maxTenEmails"),
     };
   }
 
@@ -144,7 +147,7 @@ export function validateEmailList(emails: unknown) {
     if (!isEmail(email)) {
       return {
         valid: false as const,
-        message: `Некорректный email: ${email}`,
+        message: t("validation.invalidEmail", { email }),
       };
     }
   }
@@ -156,7 +159,7 @@ export function validateEmailList(emails: unknown) {
   if (duplicates.length > 0) {
     return {
       valid: false as const,
-      message: `Повторяющийся email: ${duplicates[0]}`,
+      message: t("validation.duplicateEmail", { email: duplicates[0] }),
     };
   }
 

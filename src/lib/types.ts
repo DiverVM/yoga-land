@@ -1,4 +1,4 @@
-export type Currency = "BYN";
+export type CurrencyCode = "933";
 
 export type PaymentStatus = "pending" | "success" | "failed";
 
@@ -9,7 +9,7 @@ export type Product = {
   name: string;
   description: string;
   price: number;
-  currency: Currency;
+  currencyCode: CurrencyCode;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -24,10 +24,12 @@ export type PaginatedResult<T> = {
 
 export type Transaction = {
   id: string;
+  orderNumber: string;
   productId: string;
   amount: number;
-  currency: Currency;
+  currencyCode: CurrencyCode;
   paymentStatus: PaymentStatus;
+  orderId: string | null;
   qrId: string | null;
   createdAt: string;
   updatedAt: string;

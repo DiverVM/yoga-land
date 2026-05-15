@@ -10,6 +10,7 @@ import {
   users,
 } from "@/lib/db/schema";
 import type {
+  CurrencyCode,
   DecisionStatus,
   EmailLog,
   PaginatedResult,
@@ -86,8 +87,9 @@ export async function getTransactionById(
 type CreateTransactionInput = {
   productId: string;
   amount: number;
-  currency: "BYN";
+  currencyCode: CurrencyCode;
   paymentStatus?: PaymentStatus;
+  orderId?: string;
   qrId?: string | null;
 };
 
@@ -95,12 +97,15 @@ export async function createTransaction(
   input: CreateTransactionInput,
 ): Promise<Transaction> {
   const timestamp = nowIso();
+  const id = randomUUID();
   const transaction: Transaction = {
-    id: randomUUID(),
+    id,
+    orderNumber: id,
     productId: input.productId,
     amount: input.amount,
-    currency: input.currency,
+    currencyCode: input.currencyCode,
     paymentStatus: input.paymentStatus ?? "pending",
+    orderId: input.orderId ?? null,
     qrId: input.qrId ?? null,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -113,7 +118,12 @@ export async function createTransaction(
 type UpdateTransactionInput = Partial<
   Pick<
     Transaction,
-    "productId" | "amount" | "currency" | "paymentStatus" | "qrId"
+    | "productId"
+    | "amount"
+    | "currencyCode"
+    | "paymentStatus"
+    | "orderId"
+    | "qrId"
   >
 >;
 
