@@ -1,5 +1,5 @@
 import { and, count, desc, eq } from "drizzle-orm";
-import { randomBytes, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import {
@@ -28,14 +28,7 @@ function nowIso() {
 }
 
 function createReadableOrderNumber(date: Date) {
-  const year = String(date.getFullYear());
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const suffix = randomBytes(2).toString("hex").toUpperCase();
-
-  return `YL-${year}${month}${day}-${hours}${minutes}-${suffix}`;
+  return `YL-ORDER-${date.getTime()}`;
 }
 
 // ─── Products ────────────────────────────────────────────────────────────────
