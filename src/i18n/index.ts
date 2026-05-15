@@ -136,10 +136,17 @@ const resources = {
         nextStepsTitle: "Что делать дальше",
         nextStepsBody:
           "Скачайте QR в PDF или отправьте его на email, чтобы он всегда был под рукой.",
+        processingBadge: "Платеж обрабатывается",
+        processingTitle: "Проверяем статус платежа",
+        processingSubtitle:
+          "Платеж еще может обрабатываться. Обновите страницу через несколько секунд.",
+        refreshStatus: "Обновить статус",
         failedBadge: "Оплата не прошла",
         failedTitle: "Транзакция не завершена",
         transactionId: "ID транзакции: {{id}}",
         noTransactionId: "ID транзакции не передан.",
+        missingOrderId: "Ошибка: отсутствует номер заказа",
+        paymentFailedMessage: "Платеж не прошел. Попробуйте еще раз.",
         tryAgain: "Попробовать снова",
         transactionNotFound: "Транзакция не найдена",
         productNotFound: "Продукт не найден",
