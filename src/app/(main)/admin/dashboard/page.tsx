@@ -55,7 +55,7 @@ function adminHref(
     }
   }
   const str = qs.toString();
-  return `/admin${str ? `?${str}` : ""}`;
+  return `/admin/dashboard${str ? `?${str}` : ""}`;
 }
 
 function Pagination({
@@ -261,7 +261,7 @@ export default async function AdminPage({
                     <td className="py-2 pr-3">
                       {tx.qrId ? (
                         <Link
-                          href={`/qr/${tx.qrId}`}
+                          href={`/admin/qr/${tx.qrId}`}
                           className="font-mono text-xs text-amber-700 underline"
                         >
                           {tx.qrId.slice(0, 8)}…
@@ -374,7 +374,7 @@ export default async function AdminPage({
                     </td>
                     <td className="py-2">
                       <Link
-                        href={`/qr/${qr.id}`}
+                        href={`/admin/qr/${qr.id}`}
                         className="text-xs font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900"
                       >
                         {t("admin.open")} →
@@ -460,7 +460,7 @@ export default async function AdminPage({
                     <td className="py-2 pr-3">{log.to}</td>
                     <td className="py-2 pr-3">
                       <Link
-                        href={`/qr/${log.qrId}`}
+                        href={`/admin/qr/${log.qrId}`}
                         className="font-mono text-xs text-amber-700 underline underline-offset-2"
                       >
                         {log.qrId.slice(0, 8)}…

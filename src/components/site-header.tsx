@@ -4,7 +4,11 @@ import { HeaderMenu } from "@/components/header-menu";
 import { t } from "@/i18n";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
-export async function SiteHeader() {
+type SiteHeaderProps = {
+  showMenu?: boolean;
+};
+
+export async function SiteHeader({ showMenu = true }: SiteHeaderProps) {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   const session = token ? await verifySessionToken(token) : null;
@@ -26,7 +30,7 @@ export async function SiteHeader() {
           </span>
         </div>
 
-        <HeaderMenu isAdmin={isAdmin} />
+        {showMenu && <HeaderMenu isAdmin={isAdmin} />}
       </div>
     </header>
   );

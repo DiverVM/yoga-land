@@ -97,7 +97,7 @@ export default async function QrDetailsPage({ params }: Props) {
         />
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/admin" className="btn-secondary px-4 py-2 text-sm">
+          <Link href="/admin/dashboard" className="btn-secondary px-4 py-2 text-sm">
             {t("qrDetails.backToAdmin")}
           </Link>
           <Link href="/" className="btn-secondary px-4 py-2 text-sm">
