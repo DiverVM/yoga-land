@@ -1,45 +1,8 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { LoginForm } from "@/components/login-form";
 import { t } from "@/i18n";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, password }),
-      });
-
-      const data = (await res.json()) as { error?: string };
-
-      if (!res.ok) {
-        throw new Error(data.error ?? t("login.failed"));
-      }
-
-      window.dispatchEvent(new Event("auth-changed"));
-      router.push("/");
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("login.failed"));
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top,_#fff7ed_0%,_#ffedd5_35%,_#fed7aa_70%,_#fdba74_100%)] px-4 py-12 text-stone-900">
       <div className="pointer-events-none absolute -left-20 top-12 h-60 w-60 rounded-full bg-orange-300/35 blur-3xl" />
@@ -56,49 +19,7 @@ export default function LoginPage() {
           <p className="text-sm text-stone-600">{t("login.subtitle")}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block space-y-1">
-            <span className="text-sm font-medium text-stone-700">
-              {t("login.loginLabel")}
-            </span>
-            <input
-              type="text"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
-              required
-              autoComplete="username"
-              className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
-            />
-          </label>
-
-          <label className="block space-y-1">
-            <span className="text-sm font-medium text-stone-700">
-              {t("login.passwordLabel")}
-            </span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
-            />
-          </label>
-
-          {error ? (
-            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </p>
-          ) : null}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="btn-primary w-full px-4 py-3 text-sm"
-          >
-            {isLoading ? t("login.signingIn") : t("login.signIn")}
-          </button>
-        </form>
+        <LoginForm />
 
         <div className="text-center text-sm">
           <Link href="/" className="link-strong">

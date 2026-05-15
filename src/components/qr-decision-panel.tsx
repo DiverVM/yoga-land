@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
+import { submitDecisionAction, type QrDecisionState } from "@/lib/actions/qr";
 import { t } from "@/i18n";
 
 type QrDecisionPanelProps = {
@@ -9,57 +10,37 @@ type QrDecisionPanelProps = {
 };
 
 export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
-  const [status, setStatus] = useState(initialStatus);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const acceptAction = submitDecisionAction.bind(null, qrId, "accept");
+  const declineAction = submitDecisionAction.bind(null, qrId, "decline");
+
+  const [acceptState, dispatchAccept, isAccepting] = useActionState<
+    QrDecisionState,
+    FormData
+  >(acceptAction, null);
+  const [declineState, dispatchDecline, isDeclining] = useActionState<
+    QrDecisionState,
+    FormData
+  >(declineAction, null);
+
+  const isSubmitting = isAccepting || isDeclining;
+  const message = acceptState?.message ?? declineState?.message ?? null;
+
+  // After a successful decision, server revalidates the page so initialStatus
+  // passed from the parent server component will reflect the updated DB value
+  // on the next render. We derive displayStatus from action results if available.
+  const resolvedStatus =
+    acceptState && !acceptState.isError
+      ? "accepted"
+      : declineState && !declineState.isError
+        ? "declined"
+        : initialStatus;
 
   const statusLabel =
-    status === "pending"
+    resolvedStatus === "pending"
       ? t("admin.pending")
-      : status === "accepted"
+      : resolvedStatus === "accepted"
         ? t("admin.accepted")
         : t("admin.declined");
-
-  async function submitDecision(decision: "accept" | "decline") {
-    setMessage(null);
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch(`/api/qr-records/${qrId}/${decision}`, {
-        method: "POST",
-      });
-
-      const body = (await response.json()) as {
-        qrRecord?: { decisionStatus: "pending" | "accepted" | "declined" };
-        error?: string;
-        details?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(
-          body.details ?? body.error ?? t("qrDecision.updateFailed"),
-        );
-      }
-
-      if (body.qrRecord) {
-        setStatus(body.qrRecord.decisionStatus);
-      }
-
-      setMessage(
-        decision === "accept"
-          ? t("qrDecision.accepted")
-          : t("qrDecision.declined"),
-      );
-    } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : t("qrDecision.updateFailed"),
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  const disabled = isSubmitting;
 
   return (
     <div className="space-y-3 rounded-xl border border-stone-200 p-4">
@@ -67,24 +48,26 @@ export function QrDecisionPanel({ qrId, initialStatus }: QrDecisionPanelProps) {
         {t("qrDecision.currentDecision")}:{" "}
         <span className="font-semibold text-stone-900">{statusLabel}</span>
       </p>
-      {status === "pending" ? (
+      {resolvedStatus === "pending" ? (
         <div className="grid gap-2 sm:grid-cols-2">
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => submitDecision("accept")}
-            className="btn-secondary px-4 py-2 text-sm"
-          >
-            {t("qrDecision.accept")}
-          </button>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => submitDecision("decline")}
-            className="btn-secondary px-4 py-2 text-sm"
-          >
-            {t("qrDecision.decline")}
-          </button>
+          <form action={dispatchAccept}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-secondary w-full px-4 py-2 text-sm"
+            >
+              {t("qrDecision.accept")}
+            </button>
+          </form>
+          <form action={dispatchDecline}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-secondary w-full px-4 py-2 text-sm"
+            >
+              {t("qrDecision.decline")}
+            </button>
+          </form>
         </div>
       ) : null}
       {message ? (

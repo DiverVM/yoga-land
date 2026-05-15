@@ -1,15 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import {
+  checkoutAction,
+  type CheckoutActionState,
+} from "@/lib/actions/checkout";
 import { t } from "@/i18n";
 import { formatMoney } from "@/lib/format";
 import type { Product } from "@/lib/types";
-
-type CheckoutResponse = {
-  status: "pending";
-  formUrl: string;
-  transactionId: string;
-};
 
 type CheckoutPanelProps = {
   products: Product[];
@@ -17,64 +15,26 @@ type CheckoutPanelProps = {
 
 export function CheckoutPanel({ products }: CheckoutPanelProps) {
   const [productId, setProductId] = useState(products[0]?.id ?? "");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const selectedProduct = useMemo(
-    () => products.find((p) => p.id === productId),
-    [products, productId],
-  );
+  const [state, dispatch, isPending] = useActionState<
+    CheckoutActionState,
+    FormData
+  >(checkoutAction, null);
 
-  async function handlePay() {
-    if (!selectedProduct) {
-      setError(t("checkout.selectCourse"));
-      return;
+  // Redirect to external Alfa payment form once we have a formUrl
+  useEffect(() => {
+    if (state?.formUrl) {
+      window.location.href = state.formUrl;
     }
+  }, [state?.formUrl]);
 
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId,
-        }),
-      });
-
-      const data = (await response.json()) as CheckoutResponse & {
-        error?: string;
-        details?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(
-          data.details ?? data.error ?? t("checkout.checkoutFailed"),
-        );
-      }
-
-      if (!data.formUrl) {
-        throw new Error(t("checkout.checkoutFailed"));
-      }
-
-      // Redirect to Alfa payment form
-      window.location.href = data.formUrl;
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : t("checkout.checkoutFailed"),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const selectedProduct = products.find((p) => p.id === productId);
 
   return (
-    <div className="space-y-5">
+    <form action={dispatch} className="space-y-5">
+      {/* hidden field carries the selected productId */}
+      <input type="hidden" name="productId" value={productId} />
+
       <div>
         <h2 className="text-2xl font-bold">{t("checkout.title")}</h2>
         <p className="mt-1 text-sm text-stone-600">{t("checkout.subtitle")}</p>
@@ -114,20 +74,19 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         </div>
       ) : null}
 
-      {error ? (
+      {state?.error ? (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
+          {state.error}
         </div>
       ) : null}
 
       <button
-        type="button"
-        onClick={handlePay}
-        disabled={isLoading || products.length === 0}
+        type="submit"
+        disabled={isPending || products.length === 0}
         className="btn-primary w-full px-4 py-3 text-sm"
       >
-        {isLoading ? t("checkout.processing") : t("checkout.payNow")}
+        {isPending ? t("checkout.processing") : t("checkout.payNow")}
       </button>
-    </div>
+    </form>
   );
 }
