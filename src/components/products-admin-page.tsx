@@ -111,7 +111,10 @@ export async function ProductsAdminPage({
               </p>
             </div>
 
-            <Link href="/admin/dashboard" className="btn-secondary px-4 py-2 text-sm">
+            <Link
+              href="/admin/dashboard"
+              className="btn-secondary px-4 py-2 text-sm"
+            >
               {t("admin.backToDashboard")}
             </Link>
           </div>
