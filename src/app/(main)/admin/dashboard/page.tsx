@@ -169,9 +169,20 @@ export default async function AdminPage({
               </h1>
               <p className="text-sm text-stone-600">{t("admin.subtitle")}</p>
             </div>
-            <Link href="/" className="btn-secondary px-4 py-2 text-sm">
-              {t("common.backToLanding")}
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/admin/products"
+                className="btn-secondary px-4 py-2 text-sm"
+              >
+                {t("admin.manageProducts")}
+              </Link>
+              <Link
+                href="/admin/bulk-send"
+                className="btn-secondary px-4 py-2 text-sm"
+              >
+                {t("header.bulkSend")}
+              </Link>
+            </div>
           </div>
         </header>
 

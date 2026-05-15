@@ -27,12 +27,6 @@ export function HeaderMenu({ isAdmin }: HeaderMenuProps) {
                   {t("header.scanQr")}
                 </Link>
                 <Link
-                  href="/admin/bulk-send"
-                  className="btn-secondary px-3 py-2 text-center"
-                >
-                  {t("header.bulkSend")}
-                </Link>
-                <Link
                   href="/admin/dashboard"
                   className="btn-secondary px-3 py-2 text-center"
                 >
@@ -57,9 +51,6 @@ export function HeaderMenu({ isAdmin }: HeaderMenuProps) {
           <>
             <Link href="/admin/scan" className="btn-secondary px-3 py-1.5">
               {t("header.scanQr")}
-            </Link>
-            <Link href="/admin/bulk-send" className="btn-secondary px-3 py-1.5">
-              {t("header.bulkSend")}
             </Link>
             <Link href="/admin/dashboard" className="btn-secondary px-3 py-1.5">
               {t("header.admin")}

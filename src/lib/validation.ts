@@ -27,6 +27,174 @@ export function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
 }
 
+type ProductCreateInput = {
+  id?: string;
+  name: string;
+  description: string;
+  price: number;
+  currencyCode: "933";
+  isVisible: boolean;
+};
+
+type ProductUpdateInput = Partial<ProductCreateInput>;
+
+export function validateProductCreatePayload(payload: unknown) {
+  if (typeof payload !== "object" || payload === null) {
+    return {
+      valid: false as const,
+      message: t("common.validationFailed"),
+    };
+  }
+
+  const body = payload as Record<string, unknown>;
+  const idRaw = typeof body.id === "string" ? body.id.trim() : "";
+  const nameRaw = typeof body.name === "string" ? body.name.trim() : "";
+  const descriptionRaw =
+    typeof body.description === "string" ? body.description.trim() : "";
+  const priceRaw = body.price;
+  const currencyCodeRaw = body.currencyCode;
+  const isVisibleRaw = body.isVisible;
+
+  if (!nameRaw) {
+    return {
+      valid: false as const,
+      message: t("validation.productNameRequired"),
+    };
+  }
+
+  if (!descriptionRaw) {
+    return {
+      valid: false as const,
+      message: t("validation.productDescriptionRequired"),
+    };
+  }
+
+  if (
+    typeof priceRaw !== "number" ||
+    !Number.isFinite(priceRaw) ||
+    priceRaw <= 0
+  ) {
+    return {
+      valid: false as const,
+      message: t("validation.productPriceInvalid"),
+    };
+  }
+
+  if (currencyCodeRaw !== "933") {
+    return {
+      valid: false as const,
+      message: t("validation.currencyCodeInvalid"),
+    };
+  }
+
+  if (typeof isVisibleRaw !== "boolean") {
+    return {
+      valid: false as const,
+      message: t("validation.productVisibilityInvalid"),
+    };
+  }
+
+  return {
+    valid: true as const,
+    product: {
+      id: idRaw || undefined,
+      name: nameRaw,
+      description: descriptionRaw,
+      price: priceRaw,
+      currencyCode: currencyCodeRaw,
+      isVisible: isVisibleRaw,
+    } satisfies ProductCreateInput,
+  };
+}
+
+export function validateProductUpdatePayload(payload: unknown) {
+  if (typeof payload !== "object" || payload === null) {
+    return {
+      valid: false as const,
+      message: t("common.validationFailed"),
+    };
+  }
+
+  const body = payload as Record<string, unknown>;
+  const update: ProductUpdateInput = {};
+
+  if ("id" in body) {
+    if (typeof body.id !== "string" || !body.id.trim()) {
+      return {
+        valid: false as const,
+        message: t("validation.productIdRequired"),
+      };
+    }
+    update.id = body.id.trim();
+  }
+
+  if ("name" in body) {
+    if (typeof body.name !== "string" || !body.name.trim()) {
+      return {
+        valid: false as const,
+        message: t("validation.productNameRequired"),
+      };
+    }
+    update.name = body.name.trim();
+  }
+
+  if ("description" in body) {
+    if (typeof body.description !== "string" || !body.description.trim()) {
+      return {
+        valid: false as const,
+        message: t("validation.productDescriptionRequired"),
+      };
+    }
+    update.description = body.description.trim();
+  }
+
+  if ("price" in body) {
+    if (
+      typeof body.price !== "number" ||
+      !Number.isFinite(body.price) ||
+      body.price <= 0
+    ) {
+      return {
+        valid: false as const,
+        message: t("validation.productPriceInvalid"),
+      };
+    }
+    update.price = body.price;
+  }
+
+  if ("currencyCode" in body) {
+    if (body.currencyCode !== "933") {
+      return {
+        valid: false as const,
+        message: t("validation.currencyCodeInvalid"),
+      };
+    }
+    update.currencyCode = "933";
+  }
+
+  if ("isVisible" in body) {
+    if (typeof body.isVisible !== "boolean") {
+      return {
+        valid: false as const,
+        message: t("validation.productVisibilityInvalid"),
+      };
+    }
+    update.isVisible = body.isVisible;
+  }
+
+  if (Object.keys(update).length === 0) {
+    return {
+      valid: false as const,
+      message: t("validation.productUpdateEmpty"),
+    };
+  }
+
+  return {
+    valid: true as const,
+    product: update,
+  };
+}
+
 type BulkSendItemInput = {
   email: string;
   productId: string;

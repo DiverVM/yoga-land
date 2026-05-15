@@ -78,6 +78,60 @@ export const getProductById = unstable_cache(
   { tags: ["products"], revalidate: 3600 },
 );
 
+type CreateProductInput = {
+  id?: string;
+  name: string;
+  description: string;
+  price: number;
+  currencyCode: CurrencyCode;
+  active?: boolean;
+};
+
+export async function createProduct(
+  input: CreateProductInput,
+): Promise<Product> {
+  const timestamp = nowIso();
+  const product: Product = {
+    id: input.id?.trim() || randomUUID(),
+    name: input.name,
+    description: input.description,
+    price: input.price,
+    currencyCode: input.currencyCode,
+    active: input.active ?? true,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+
+  await db.insert(products).values(product).run();
+  return product;
+}
+
+type UpdateProductInput = Partial<
+  Pick<Product, "name" | "description" | "price" | "currencyCode" | "active">
+>;
+
+export async function updateProduct(
+  id: string,
+  input: UpdateProductInput,
+): Promise<Product | null> {
+  await db
+    .update(products)
+    .set({ ...input, updatedAt: nowIso() })
+    .where(eq(products.id, id))
+    .run();
+
+  const rows = await db
+    .select()
+    .from(products)
+    .where(eq(products.id, id))
+    .all();
+  return (rows[0] as Product) ?? null;
+}
+
+export async function softDeleteProduct(id: string): Promise<Product | null> {
+  return updateProduct(id, { active: false });
+}
+
 // ─── Transactions ────────────────────────────────────────────────────────────
 
 export async function listTransactions(): Promise<Transaction[]> {
