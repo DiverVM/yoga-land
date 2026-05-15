@@ -65,7 +65,6 @@ export async function POST(request: Request) {
     {
       status: "pending",
       formUrl: orderResult.formUrl,
-      orderId: orderResult.orderId,
       transactionId: transaction.id,
     },
     201,

@@ -130,7 +130,7 @@ const resources = {
       payment: {
         successBadge: "Оплата успешна",
         successTitle: "Ваш QR-код готов",
-        transactionFor: "Транзакция {{id}} на сумму {{amount}}",
+        transactionFor: "Заказ {{id}} на сумму {{amount}}",
         successSubtitle:
           "Спасибо за покупку. Сохраните QR-код и покажите его при посещении.",
         nextStepsTitle: "Что делать дальше",
@@ -143,15 +143,27 @@ const resources = {
         refreshStatus: "Обновить статус",
         failedBadge: "Оплата не прошла",
         failedTitle: "Транзакция не завершена",
+        failedSubtitle:
+          "Платеж не был подтвержден. Попробуйте оформить заказ еще раз.",
         transactionId: "ID транзакции: {{id}}",
+        orderNumber: "Номер заказа: {{orderNumber}}",
         noTransactionId: "ID транзакции не передан.",
-        missingOrderId: "Ошибка: отсутствует номер заказа",
+        missingOrderId:
+          "Не удалось определить номер заказа для проверки оплаты.",
         paymentFailedMessage: "Платеж не прошел. Попробуйте еще раз.",
         tryAgain: "Попробовать снова",
         transactionNotFound: "Транзакция не найдена",
         productNotFound: "Продукт не найден",
         statusCheckFailed: "Не удалось проверить статус оплаты",
         qrCreateFailed: "Не удалось создать запись QR",
+        pageNotFoundTitle: "Мы не нашли этот платеж",
+        pageNotFoundBody:
+          "Ссылка недействительна или платеж уже недоступен. Вернитесь на главную и начните заново.",
+        failedPageTitle: "Платеж не завершен",
+        failedPageBody:
+          "Ничего страшного. Вы можете вернуться на главную и попробовать оплатить еще раз.",
+        failedPageUnknown:
+          "Мы не смогли определить платеж по этой ссылке, но вы можете начать оформление заново.",
       },
       qrDetails: {
         title: "Детали QR",

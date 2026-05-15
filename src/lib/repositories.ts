@@ -1,5 +1,5 @@
 import { and, count, desc, eq } from "drizzle-orm";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import {
@@ -25,6 +25,17 @@ const PAGE_LIMIT = 10;
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function createReadableOrderNumber(date: Date) {
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const suffix = randomBytes(2).toString("hex").toUpperCase();
+
+  return `YL-${year}${month}${day}-${hours}${minutes}-${suffix}`;
 }
 
 // ─── Products ────────────────────────────────────────────────────────────────
@@ -96,11 +107,12 @@ type CreateTransactionInput = {
 export async function createTransaction(
   input: CreateTransactionInput,
 ): Promise<Transaction> {
-  const timestamp = nowIso();
+  const now = new Date();
+  const timestamp = now.toISOString();
   const id = randomUUID();
   const transaction: Transaction = {
     id,
-    orderNumber: id,
+    orderNumber: createReadableOrderNumber(now),
     productId: input.productId,
     amount: input.amount,
     currencyCode: input.currencyCode,

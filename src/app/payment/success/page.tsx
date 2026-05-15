@@ -52,12 +52,22 @@ function PaymentPageShell({ children }: PaymentPageShellProps) {
 function PaymentNotFoundView() {
   return (
     <PaymentPageShell>
-      <h1 className="text-2xl font-bold text-red-600">
-        {t("common.notFound")}
-      </h1>
-      <Link href="/" className="btn-secondary px-4 py-2 text-sm">
-        {t("common.backToLanding")}
-      </Link>
+      <div className="space-y-4">
+        <p className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold tracking-wide text-amber-800 uppercase">
+          {t("payment.failedBadge")}
+        </p>
+        <h1 className="text-3xl font-bold text-stone-900">
+          {t("payment.pageNotFoundTitle")}
+        </h1>
+        <p className="text-sm text-stone-600">
+          {t("payment.pageNotFoundBody")}
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-3">
+        <Link href="/" className="btn-primary px-4 py-2 text-sm">
+          {t("common.backToLanding")}
+        </Link>
+      </div>
     </PaymentPageShell>
   );
 }
@@ -136,7 +146,7 @@ function PaymentSuccessView({
         </h1>
         <p className="text-sm text-stone-600">
           {t("payment.transactionFor", {
-            id: transaction.id,
+            id: transaction.orderNumber,
             amount: formatMoney(transaction.amount, transaction.currencyCode),
           })}
         </p>
@@ -223,7 +233,6 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       const result = await finalizePayment({
         transaction: currentTransaction,
         product,
-        orderId: currentTransaction.orderId,
         origin,
       });
 

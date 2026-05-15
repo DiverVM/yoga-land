@@ -5,7 +5,6 @@ import { getProductById, getTransactionById } from "@/lib/repositories";
 import { getRequestOrigin } from "@/lib/request-origin";
 
 type CheckStatusBody = {
-  orderId: string;
   transactionId: string;
 };
 
@@ -15,7 +14,7 @@ export async function POST(request: Request) {
     return fail(t("common.invalidJsonBody"), 400);
   }
 
-  const { orderId, transactionId } = body;
+  const { transactionId } = body;
 
   const transaction = await getTransactionById(transactionId);
   if (!transaction) {
@@ -32,7 +31,6 @@ export async function POST(request: Request) {
     const result = await finalizePayment({
       transaction,
       product,
-      orderId,
       origin,
     });
 

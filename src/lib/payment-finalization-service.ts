@@ -16,7 +16,6 @@ import type { Product, QrRecord, Transaction } from "@/lib/types";
 export type FinalizePaymentInput = {
   transaction: Transaction;
   product: Product;
-  orderId: string;
   origin: string;
 };
 
@@ -29,8 +28,13 @@ export type FinalizePaymentResult = {
 export async function finalizePayment(
   input: FinalizePaymentInput,
 ): Promise<FinalizePaymentResult> {
-  const { transaction, product, orderId, origin } = input;
-  const { orderStatus } = await getOrderStatus(orderId);
+  const { transaction, product, origin } = input;
+
+  if (!transaction.orderId) {
+    throw new Error("Missing orderId for payment finalization");
+  }
+
+  const { orderStatus } = await getOrderStatus(transaction.orderId);
 
   if (orderStatus !== 2) {
     return { orderStatus };

@@ -8,7 +8,6 @@ import type { Product } from "@/lib/types";
 type CheckoutResponse = {
   status: "pending";
   formUrl: string;
-  orderId: string;
   transactionId: string;
 };
 
