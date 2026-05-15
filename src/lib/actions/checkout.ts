@@ -43,7 +43,7 @@ export async function checkoutAction(
   let orderResult;
   try {
     orderResult = await registerOrder({
-      amount: product.price,
+      amountRubles: product.price,
       currencyCode: product.currencyCode,
       orderNumber: transaction.orderNumber,
       returnUrl,

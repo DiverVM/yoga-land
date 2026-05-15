@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   let orderResult;
   try {
     orderResult = await registerOrder({
-      amount: product.price,
+      amountRubles: product.price,
       currencyCode: product.currencyCode,
       orderNumber: transaction.orderNumber,
       returnUrl,

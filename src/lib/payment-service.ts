@@ -34,7 +34,7 @@ function buildFormData(
 }
 
 export async function registerOrder(input: {
-  amount: number; // in BYN cents (e.g., 1900 for 19.00)
+  amountRubles: number;
   currencyCode: string;
   orderNumber: string;
   returnUrl: string;
@@ -44,9 +44,10 @@ export async function registerOrder(input: {
   const baseUrl = getRequiredEnv("ALFA_API_BASE_URL");
   const username = getRequiredEnv("ALFA_USERNAME");
   const password = getRequiredEnv("ALFA_PASSWORD");
+  const amountInKopeks = Math.round(input.amountRubles * 100);
 
   const params = buildFormData({
-    amount: input.amount,
+    amount: amountInKopeks,
     currency: input.currencyCode,
     returnUrl: input.returnUrl,
     failUrl: input.failUrl,
