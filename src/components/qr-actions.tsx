@@ -31,6 +31,54 @@ function formatPdfTransactionDate(value: string) {
   }).format(date);
 }
 
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+): number {
+  const words = text.split(" ");
+  let line = "";
+  for (const word of words) {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, y);
+      y += lineHeight;
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) {
+    ctx.fillText(line, x, y);
+    y += lineHeight;
+  }
+  return y;
+}
+
+function roundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 export function QrActions({
   qrId,
   qrUrl,
@@ -61,139 +109,113 @@ export function QrActions({
         margin: 2,
       });
 
+      const formattedPrice = formatMoney(amount, currencyCode);
+      const formattedDate = formatPdfTransactionDate(transactionDate);
+
+      const rows: [string, string][] = [
+        [t("email.course"), productName],
+        [t("email.price"), formattedPrice],
+        [t("email.transaction"), transactionId],
+        [t("email.purchasedAt"), formattedDate],
+        ...(customerFullName
+          ? ([[t("email.customerName"), customerFullName]] as [
+              string,
+              string,
+            ][])
+          : []),
+        [t("email.qrId"), qrId],
+      ];
+
+      // Render to canvas using system fonts (supports Cyrillic)
+      const scale = 2;
+      const W = 595;
+      const H = 842;
+      const canvas = document.createElement("canvas");
+      canvas.width = W * scale;
+      canvas.height = H * scale;
+      const ctx = canvas.getContext("2d")!;
+      ctx.scale(scale, scale);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, W, H);
+
+      const PAD = 48;
+      let y = PAD;
+
+      // Brand
+      ctx.font = "bold 11px Arial, sans-serif";
+      ctx.fillStyle = "#ea580c";
+      ctx.fillText("YOGA LAND", PAD, y);
+      y += 28;
+
+      // Title
+      ctx.font = "bold 26px Arial, sans-serif";
+      ctx.fillStyle = "#1c1917";
+      ctx.fillText(t("email.title"), PAD, y);
+      y += 36;
+
+      // Subtitle
+      ctx.font = "13px Arial, sans-serif";
+      ctx.fillStyle = "#57534e";
+      y = wrapText(ctx, t("email.subtitle"), PAD, y, W - PAD * 2, 20);
+      y += 20;
+
+      // QR image
+      const qrImg = new Image();
+      qrImg.src = qrDataUrl;
+      await new Promise<void>((resolve) => {
+        qrImg.onload = () => resolve();
+      });
+      const qrSize = 220;
+      ctx.drawImage(qrImg, (W - qrSize) / 2, y, qrSize, qrSize);
+      y += qrSize + 28;
+
+      // Details box
+      const rowH = 26;
+      const boxPadX = 20;
+      const boxPadY = 16;
+      const boxH = boxPadY + 28 + rows.length * rowH + boxPadY;
+      const boxX = PAD;
+      const boxW = W - PAD * 2;
+
+      ctx.fillStyle = "#fafaf9";
+      ctx.strokeStyle = "#e7e5e4";
+      ctx.lineWidth = 1;
+      roundedRect(ctx, boxX, y, boxW, boxH, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = "bold 15px Arial, sans-serif";
+      ctx.fillStyle = "#1c1917";
+      ctx.fillText(t("email.detailsTitle"), boxX + boxPadX, y + boxPadY + 15);
+
+      let rowY = y + boxPadY + 15 + rowH;
+      for (const [label, value] of rows) {
+        const labelText = `${label}: `;
+        ctx.font = "bold 13px Arial, sans-serif";
+        ctx.fillStyle = "#44403c";
+        const labelW = ctx.measureText(labelText).width;
+        ctx.fillText(labelText, boxX + boxPadX, rowY);
+        ctx.font = "13px Arial, sans-serif";
+        ctx.fillText(value, boxX + boxPadX + labelW, rowY);
+        rowY += rowH;
+      }
+
+      y += boxH + 24;
+
+      // Footer
+      ctx.font = "11px Arial, sans-serif";
+      ctx.fillStyle = "#78716c";
+      wrapText(ctx, t("email.footer"), PAD, y, W - PAD * 2, 16);
+
+      // Save as PDF directly (no dialog)
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "pt",
         format: "a4",
       });
-
-      const pageWidth = 595.28;
-      const pageHeight = 841.89;
-      const cardX = 32;
-      const cardY = 32;
-      const cardWidth = pageWidth - cardX * 2;
-      const cardHeight = pageHeight - cardY * 2;
-      const cardPadding = 32;
-      const textX = cardX + cardPadding;
-      const textWidth = cardWidth - cardPadding * 2;
-
-      pdf.setFillColor(245, 245, 244);
-      pdf.rect(0, 0, pageWidth, pageHeight, "F");
-
-      pdf.setFillColor(255, 255, 255);
-      pdf.roundedRect(cardX, cardY, cardWidth, cardHeight, 20, 20, "F");
-
-      pdf.setDrawColor(231, 229, 228);
-      pdf.roundedRect(cardX, cardY, cardWidth, cardHeight, 20, 20, "S");
-
-      pdf.setTextColor(234, 88, 12);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(10);
-      pdf.text("YOGA LAND", textX, cardY + cardPadding - 8);
-
-      pdf.setTextColor(28, 25, 23);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(24);
-      pdf.text(t("email.title"), textX, cardY + cardPadding + 24);
-
-      pdf.setTextColor(87, 83, 78);
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(12);
-      const subtitleLines = pdf.splitTextToSize(t("email.subtitle"), textWidth);
-      pdf.text(subtitleLines, textX, cardY + cardPadding + 48);
-
-      const qrBoxSize = 220;
-      const qrOuterSize = 244;
-      const qrContainerX = cardX + (cardWidth - qrOuterSize) / 2;
-      const qrContainerY = cardY + cardPadding + 76;
-
-      pdf.setFillColor(255, 255, 255);
-      pdf.roundedRect(
-        qrContainerX,
-        qrContainerY,
-        qrOuterSize,
-        qrOuterSize,
-        16,
-        16,
-        "F",
-      );
-      pdf.setDrawColor(231, 229, 228);
-      pdf.roundedRect(
-        qrContainerX,
-        qrContainerY,
-        qrOuterSize,
-        qrOuterSize,
-        16,
-        16,
-        "S",
-      );
-
-      pdf.addImage(
-        qrDataUrl,
-        "PNG",
-        qrContainerX + 12,
-        qrContainerY + 12,
-        qrBoxSize,
-        qrBoxSize,
-      );
-
-      const detailsX = textX;
-      const detailsY = qrContainerY + qrOuterSize + 24;
-      const detailsWidth = textWidth;
-      const detailsHeight = 186;
-
-      pdf.setFillColor(250, 250, 249);
-      pdf.roundedRect(
-        detailsX,
-        detailsY,
-        detailsWidth,
-        detailsHeight,
-        16,
-        16,
-        "F",
-      );
-      pdf.setDrawColor(231, 229, 228);
-      pdf.roundedRect(
-        detailsX,
-        detailsY,
-        detailsWidth,
-        detailsHeight,
-        16,
-        16,
-        "S",
-      );
-
-      pdf.setTextColor(28, 25, 23);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
-      pdf.text(t("email.detailsTitle"), detailsX + 20, detailsY + 28);
-
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(11);
-      pdf.setTextColor(68, 64, 60);
-      const lines = [
-        `${t("email.course")}: ${productName}`,
-        `${t("email.price")}: ${formatMoney(amount, currencyCode)}`,
-        `${t("email.transaction")}: ${transactionId}`,
-        `${t("email.purchasedAt")}: ${formatPdfTransactionDate(transactionDate)}`,
-        ...(customerFullName
-          ? [`${t("email.customerName")}: ${customerFullName}`]
-          : []),
-        `${t("email.qrId")}: ${qrId}`,
-      ];
-
-      let detailsLineY = detailsY + 50;
-      for (const line of lines) {
-        const wrapped = pdf.splitTextToSize(line, detailsWidth - 40);
-        pdf.text(wrapped, detailsX + 20, detailsLineY);
-        detailsLineY += wrapped.length * 14;
-      }
-
-      pdf.setTextColor(120, 113, 108);
-      pdf.setFontSize(10);
-      const footerLines = pdf.splitTextToSize(t("email.footer"), textWidth);
-      pdf.text(footerLines, textX, detailsY + detailsHeight + 26);
-
+      pdf.addImage(imgData, "JPEG", 0, 0, W, H);
       pdf.save(`qr-${qrId}.pdf`);
     } catch {
       setMessage(t("qrActions.pdfFailed"));
