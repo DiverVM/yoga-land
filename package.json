@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "setup:local": "[ -f .env.local ] || cp .env.example .env.local && npm run db:migrate:local && npm run db:seed:local",
+    "setup:local": "[ -f .env.local ] || cp .env.example .env.local && mkdir -p data && npm run db:migrate:local && npm run db:seed:local",
     "db:generate": "drizzle-kit generate",
     "db:seed": "tsx scripts/seed-all.ts",
     "db:seed:local": "dotenv -e .env.local -- tsx scripts/seed-all.ts",
