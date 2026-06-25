@@ -3,10 +3,13 @@ import { fail, ok, parseJsonBody } from "@/lib/api";
 import { registerOrder } from "@/lib/payment-service";
 import { getRequestOrigin } from "@/lib/request-origin";
 import { createTransaction, updateTransaction } from "@/lib/repositories";
+import { normalizeOptionalName } from "@/lib/validation";
 import { validateProductId } from "@/lib/validation.server";
 
 type CheckoutBody = {
   productId?: string;
+  firstName?: string;
+  lastName?: string;
 };
 
 export async function POST(request: Request) {
@@ -21,11 +24,15 @@ export async function POST(request: Request) {
   }
 
   const product = validation.product;
+  const firstName = normalizeOptionalName(body.firstName);
+  const lastName = normalizeOptionalName(body.lastName);
   const origin = await getRequestOrigin();
 
   // Create pending transaction
   const transaction = await createTransaction({
     productId: product.id,
+    firstName,
+    lastName,
     amount: product.price,
     currencyCode: product.currencyCode,
     paymentStatus: "pending",

@@ -144,6 +144,8 @@ export async function getTransactionById(
 
 type CreateTransactionInput = {
   productId: string;
+  firstName?: string | null;
+  lastName?: string | null;
   amount: number;
   currencyCode: CurrencyCode;
   paymentStatus?: PaymentStatus;
@@ -161,6 +163,8 @@ export async function createTransaction(
     id,
     orderNumber: createReadableOrderNumber(now),
     productId: input.productId,
+    firstName: input.firstName ?? null,
+    lastName: input.lastName ?? null,
     amount: input.amount,
     currencyCode: input.currencyCode,
     paymentStatus: input.paymentStatus ?? "pending",
@@ -178,6 +182,8 @@ type UpdateTransactionInput = Partial<
   Pick<
     Transaction,
     | "productId"
+    | "firstName"
+    | "lastName"
     | "amount"
     | "currencyCode"
     | "paymentStatus"

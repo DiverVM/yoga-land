@@ -27,6 +27,15 @@ export function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
 }
 
+export function normalizeOptionalName(value: unknown) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
 type ProductCreateInput = {
   id?: string;
   name: string;
@@ -198,6 +207,8 @@ export function validateProductUpdatePayload(payload: unknown) {
 type BulkSendItemInput = {
   email: string;
   productId: string;
+  firstName?: string;
+  lastName?: string;
 };
 
 export function validateBulkSendItems(items: unknown) {
@@ -236,6 +247,8 @@ export function validateBulkSendItems(items: unknown) {
   const prepared = normalized.map((item) => ({
     email: normalizeEmail(item.email),
     productId: item.productId.trim(),
+    firstName: normalizeOptionalName(item.firstName),
+    lastName: normalizeOptionalName(item.lastName),
   }));
 
   for (const item of prepared) {

@@ -1,11 +1,13 @@
 import { t } from "@/i18n";
 import { fail, ok, parseJsonBody } from "@/lib/api";
 import { createTransaction, listTransactions } from "@/lib/repositories";
-import { isPaymentStatus } from "@/lib/validation";
+import { isPaymentStatus, normalizeOptionalName } from "@/lib/validation";
 import { validateProductId } from "@/lib/validation.server";
 
 type CreateTransactionBody = {
   productId?: string;
+  firstName?: string;
+  lastName?: string;
   paymentStatus?: "pending" | "success" | "failed";
 };
 
@@ -35,9 +37,13 @@ export async function POST(request: Request) {
   }
 
   const product = validation.product;
+  const firstName = normalizeOptionalName(body.firstName);
+  const lastName = normalizeOptionalName(body.lastName);
 
   const transaction = await createTransaction({
     productId: product.id,
+    firstName,
+    lastName,
     amount: product.price,
     currencyCode: product.currencyCode,
     paymentStatus,

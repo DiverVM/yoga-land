@@ -9,6 +9,8 @@ type SendQrEmailInput = {
   qrUrl: string;
   transactionId: string;
   transactionDate: string;
+  firstName: string | null;
+  lastName: string | null;
   productName: string;
   amount: number;
   currencyCode: string;
@@ -66,6 +68,10 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
   const productName = escapeHtml(input.productName);
   const qrId = escapeHtml(input.qrId);
   const transactionId = escapeHtml(input.transactionId);
+  const fullNameRaw = [input.firstName, input.lastName]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .join(" ");
+  const fullName = fullNameRaw ? escapeHtml(fullNameRaw) : null;
   const formattedPrice = escapeHtml(
     formatMoney(input.amount, input.currencyCode),
   );
@@ -96,6 +102,7 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
         <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.price")}:</strong> ${formattedPrice}</p>
         <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.transaction")}:</strong> ${transactionId}</p>
         <p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.purchasedAt")}:</strong> ${formattedDate}</p>
+        ${fullName ? `<p style="margin: 0 0 6px; color: #44403c;"><strong>${t("email.customerName")}:</strong> ${fullName}</p>` : ""}
         <p style="margin: 0; color: #44403c;"><strong>${t("email.qrId")}:</strong> ${qrId}</p>
       </div>
 
@@ -106,6 +113,10 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
 }
 
 function buildEmailText(input: SendQrEmailInput): string {
+  const fullName = [input.firstName, input.lastName]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .join(" ");
+
   return [
     t("email.textIntro"),
     "",
@@ -115,6 +126,7 @@ function buildEmailText(input: SendQrEmailInput): string {
     `${t("email.price")}: ${formatMoney(input.amount, input.currencyCode)}`,
     `${t("email.transaction")}: ${input.transactionId}`,
     `${t("email.purchasedAt")}: ${formatTransactionDate(input.transactionDate)}`,
+    ...(fullName ? [`${t("email.customerName")}: ${fullName}`] : []),
     `${t("email.qrId")}: ${input.qrId}`,
     "",
     t("email.textUseQr"),

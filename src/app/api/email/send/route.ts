@@ -48,6 +48,8 @@ export async function POST(request: Request) {
     qrUrl: qrRecord.qrUrl,
     transactionId: transaction.id,
     transactionDate: transaction.createdAt,
+    firstName: transaction.firstName,
+    lastName: transaction.lastName,
     productName: product.name,
     amount: transaction.amount,
     currencyCode: transaction.currencyCode,

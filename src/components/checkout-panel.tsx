@@ -64,6 +64,34 @@ export function CheckoutPanel({ products }: CheckoutPanelProps) {
         )}
       </label>
 
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block space-y-2">
+          <span className="text-sm font-medium text-stone-700">
+            {t("checkout.firstName")}
+          </span>
+          <input
+            type="text"
+            name="firstName"
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
+            placeholder={t("checkout.firstNamePlaceholder")}
+            autoComplete="given-name"
+          />
+        </label>
+
+        <label className="block space-y-2">
+          <span className="text-sm font-medium text-stone-700">
+            {t("checkout.lastName")}
+          </span>
+          <input
+            type="text"
+            name="lastName"
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 outline-none ring-orange-500 transition focus:ring"
+            placeholder={t("checkout.lastNamePlaceholder")}
+            autoComplete="family-name"
+          />
+        </label>
+      </div>
+
       {selectedProduct ? (
         <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-950">
           <p className="mb-1 text-stone-600">{selectedProduct.description}</p>

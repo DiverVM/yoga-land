@@ -57,6 +57,13 @@
       "when": 1778864400000,
       "tag": "0007_drop_currency_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1782401029939,
+      "tag": "0008_strong_power_pack",
+      "breakpoints": true
     }
   ]
 }

@@ -27,6 +27,8 @@ type BulkSendBody = {
   items?: Array<{
     email?: string;
     productId?: string;
+    firstName?: string;
+    lastName?: string;
   }>;
 };
 
@@ -67,6 +69,8 @@ export async function POST(request: Request) {
 
       const transaction = await createTransaction({
         productId: product.id,
+        firstName: item.firstName,
+        lastName: item.lastName,
         amount: product.price,
         currencyCode: product.currencyCode,
         paymentStatus: "success",
@@ -93,6 +97,8 @@ export async function POST(request: Request) {
         qrUrl: qrRecord.qrUrl,
         transactionId: transaction.id,
         transactionDate: transaction.createdAt,
+        firstName: transaction.firstName,
+        lastName: transaction.lastName,
         productName: product.name,
         amount: transaction.amount,
         currencyCode: transaction.currencyCode,

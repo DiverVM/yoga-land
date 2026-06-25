@@ -4,6 +4,7 @@ import { t } from "@/i18n";
 import { registerOrder } from "@/lib/payment-service";
 import { getRequestOrigin } from "@/lib/request-origin";
 import { createTransaction, updateTransaction } from "@/lib/repositories";
+import { normalizeOptionalName } from "@/lib/validation";
 import { validateProductId } from "@/lib/validation.server";
 
 export type CheckoutActionState = {
@@ -16,6 +17,8 @@ export async function checkoutAction(
   formData: FormData,
 ): Promise<CheckoutActionState> {
   const productId = formData.get("productId");
+  const firstName = normalizeOptionalName(formData.get("firstName"));
+  const lastName = normalizeOptionalName(formData.get("lastName"));
 
   const validation = await validateProductId(
     typeof productId === "string" ? productId : undefined,
@@ -29,6 +32,8 @@ export async function checkoutAction(
 
   const transaction = await createTransaction({
     productId: product.id,
+    firstName,
+    lastName,
     amount: product.price,
     currencyCode: product.currencyCode,
     paymentStatus: "pending",

@@ -26,6 +26,8 @@ export type Transaction = {
   id: string;
   orderNumber: string;
   productId: string;
+  firstName: string | null;
+  lastName: string | null;
   amount: number;
   currencyCode: CurrencyCode;
   paymentStatus: PaymentStatus;

@@ -25,6 +25,8 @@ type BulkSendFormProps = {
 type BulkSendRow = {
   email: string;
   productId: string;
+  firstName: string;
+  lastName: string;
 };
 
 const INITIAL_EMAIL_COUNT = 3;
@@ -35,6 +37,8 @@ function createInitialRows(defaultProductId: string): BulkSendRow[] {
   return Array.from({ length: INITIAL_EMAIL_COUNT }, () => ({
     email: "",
     productId: defaultProductId,
+    firstName: "",
+    lastName: "",
   }));
 }
 
@@ -60,7 +64,15 @@ export function BulkSendForm({ products }: BulkSendFormProps) {
     setRows((current) =>
       current.length >= MAX_EMAIL_COUNT
         ? current
-        : [...current, { email: "", productId: defaultProductId }],
+        : [
+            ...current,
+            {
+              email: "",
+              productId: defaultProductId,
+              firstName: "",
+              lastName: "",
+            },
+          ],
     );
   }
 
@@ -140,7 +152,7 @@ export function BulkSendForm({ products }: BulkSendFormProps) {
         {rows.map((row, index) => (
           <div
             key={index}
-            className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)_auto] md:items-center"
+            className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(9rem,12rem)_minmax(9rem,12rem)_minmax(12rem,16rem)_auto] md:items-center"
           >
             <label className="block">
               <input
@@ -154,6 +166,34 @@ export function BulkSendForm({ products }: BulkSendFormProps) {
                 aria-label={`Email ${index + 1}`}
                 className="w-full min-w-0 rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
                 required
+              />
+            </label>
+
+            <label className="block">
+              <input
+                id={`bulk-first-name-${index}`}
+                type="text"
+                value={row.firstName}
+                onChange={(event) =>
+                  updateRow(index, "firstName", event.target.value)
+                }
+                placeholder={t("bulkSend.firstName")}
+                aria-label={`${t("bulkSend.firstName")} ${index + 1}`}
+                className="w-full min-w-0 rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
+              />
+            </label>
+
+            <label className="block">
+              <input
+                id={`bulk-last-name-${index}`}
+                type="text"
+                value={row.lastName}
+                onChange={(event) =>
+                  updateRow(index, "lastName", event.target.value)
+                }
+                placeholder={t("bulkSend.lastName")}
+                aria-label={`${t("bulkSend.lastName")} ${index + 1}`}
+                className="w-full min-w-0 rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none ring-orange-500 focus:ring"
               />
             </label>
 

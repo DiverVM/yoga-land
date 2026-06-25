@@ -37,6 +37,8 @@ const resources = {
           "Отправьте QR-коды нескольким получателям за один запуск и получите отчет по каждому адресу.",
         product: "Продукт",
         emails: "Emails",
+        firstName: "Имя",
+        lastName: "Фамилия",
         addEmail: "Добавить email",
         removeEmail: "Удалить",
         send: "Отправить массово",
@@ -59,6 +61,10 @@ const resources = {
         subtitle:
           "Выберите курс ниже и завершите оплату, чтобы получить QR-код.",
         course: "Курс",
+        firstName: "Имя (необязательно)",
+        firstNamePlaceholder: "Например, Анна",
+        lastName: "Фамилия (необязательно)",
+        lastNamePlaceholder: "Например, Иванова",
         noCourses: "Нет активных курсов.",
         paymentSimulation: "Симуляция оплаты",
         simulationAuto: "Авто",
@@ -264,6 +270,7 @@ const resources = {
         price: "Цена",
         transaction: "Транзакция",
         purchasedAt: "Дата покупки",
+        customerName: "Имя получателя",
         qrId: "ID QR",
         footer:
           "Сохраните это письмо. В нем содержатся ваш QR-код и данные транзакции.",

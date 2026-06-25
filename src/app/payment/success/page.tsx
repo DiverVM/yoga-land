@@ -37,6 +37,7 @@ type PaymentSuccessViewProps = {
   transaction: Transaction;
   qrRecord: QrRecord;
   qrDataUrl: string;
+  productName: string;
 };
 
 function PaymentPageShell({ children }: PaymentPageShellProps) {
@@ -134,7 +135,12 @@ function PaymentSuccessView({
   transaction,
   qrRecord,
   qrDataUrl,
+  productName,
 }: PaymentSuccessViewProps) {
+  const customerFullName = [transaction.firstName, transaction.lastName]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .join(" ");
+
   return (
     <PaymentPageShell>
       <header className="space-y-2">
@@ -151,6 +157,11 @@ function PaymentSuccessView({
           })}
         </p>
         <p className="text-sm text-stone-700">{t("payment.successSubtitle")}</p>
+        {customerFullName ? (
+          <p className="text-sm text-stone-700">
+            {t("email.customerName")}: {customerFullName}
+          </p>
+        ) : null}
       </header>
 
       <section className="grid gap-6 md:grid-cols-[220px_1fr]">
@@ -172,7 +183,17 @@ function PaymentSuccessView({
           <p className="text-sm text-emerald-800">
             {t("payment.nextStepsBody")}
           </p>
-          <QrActions qrId={qrRecord.id} qrUrl={qrRecord.qrUrl} />
+          <QrActions
+            qrId={qrRecord.id}
+            qrUrl={qrRecord.qrUrl}
+            transactionId={transaction.id}
+            transactionDate={transaction.createdAt}
+            productName={productName}
+            amount={transaction.amount}
+            currencyCode={transaction.currencyCode}
+            firstName={transaction.firstName}
+            lastName={transaction.lastName}
+          />
         </div>
       </section>
 
@@ -201,6 +222,11 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   }
 
   let currentTransaction = transaction;
+  const currentProduct = await getProductById(currentTransaction.productId);
+  if (!currentProduct) {
+    return <PaymentNotFoundView />;
+  }
+
   let qrRecord: QrRecord | null = null;
   let qrDataUrl: string | null = null;
   let pageErrorMessage: string | null = null;
@@ -223,16 +249,11 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       );
     }
 
-    const product = await getProductById(currentTransaction.productId);
-    if (!product) {
-      return <PaymentNotFoundView />;
-    }
-
     try {
       const origin = await getRequestOrigin();
       const result = await finalizePayment({
         transaction: currentTransaction,
-        product,
+        product: currentProduct,
         origin,
       });
 
@@ -281,6 +302,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       transaction={currentTransaction}
       qrRecord={qrRecord}
       qrDataUrl={qrDataUrl}
+      productName={currentProduct.name}
     />
   );
 }

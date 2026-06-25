@@ -15,6 +15,8 @@ export const transactions = sqliteTable("transactions", {
   id: text("id").primaryKey(),
   orderNumber: text("order_number").notNull(),
   productId: text("product_id").notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
   amount: integer("amount").notNull(),
   currencyCode: text("currency_code", { enum: ["933"] }).notNull(),
   paymentStatus: text("payment_status", {
