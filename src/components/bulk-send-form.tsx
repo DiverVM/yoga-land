@@ -29,7 +29,7 @@ type BulkSendRow = {
   lastName: string;
 };
 
-const INITIAL_EMAIL_COUNT = 3;
+const INITIAL_EMAIL_COUNT = 1;
 const MIN_EMAIL_COUNT = 1;
 const MAX_EMAIL_COUNT = 10;
 
