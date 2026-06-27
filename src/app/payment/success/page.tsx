@@ -42,6 +42,17 @@ type PaymentSuccessViewProps = {
   emailToken: string;
 };
 
+const EMAIL_ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 7;
+
+function getEmailTokenExpiresAt(createdAt: string) {
+  const createdAtMs = new Date(createdAt).getTime();
+  if (Number.isNaN(createdAtMs)) {
+    return null;
+  }
+
+  return createdAtMs + EMAIL_ACCESS_TOKEN_MAX_AGE_MS;
+}
+
 function PaymentPageShell({ children }: PaymentPageShellProps) {
   return (
     <div className="min-h-screen bg-stone-100 px-4 py-24">
@@ -301,10 +312,22 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     return <PaymentNotFoundView />;
   }
 
+  const emailTokenExpiresAt = getEmailTokenExpiresAt(
+    currentTransaction.createdAt,
+  );
+  if (emailTokenExpiresAt === null) {
+    return (
+      <PaymentErrorView
+        transaction={currentTransaction}
+        errorMessage={t("common.unknownError")}
+      />
+    );
+  }
+
   const emailToken = await createEmailAccessToken({
     qrId: qrRecord.id,
     transactionId: currentTransaction.id,
-    expiresAt: Date.now() + 1000 * 60 * 60,
+    expiresAt: emailTokenExpiresAt,
   });
 
   return (
