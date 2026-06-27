@@ -37,7 +37,7 @@ const seedProducts: SeedProduct[] = [
     id: "premium-plan",
     name: "Премиум-план на месяц",
     description:
-      "Безлимитные занятия на целый месяц. Полный доступ к возможностям Yoga Land.",
+      "Безлимитные занятия на целый месяц. Полный доступ к возможностям Yourmoov.",
     price: 129,
     currencyCode: "933",
     active: true,

@@ -17,7 +17,7 @@ type ScanResult = {
   qrId?: string;
 };
 
-/** Extract the QR record ID from a Yoga Land QR URL like `https://…/qr/<id>`. */
+/** Extract the QR record ID from a Yourmoov QR URL like `https://…/qr/<id>`. */
 function extractQrId(text: string): string | null {
   try {
     const { pathname } = new URL(text);

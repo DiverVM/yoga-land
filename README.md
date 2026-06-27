@@ -1,4 +1,4 @@
-# Yoga Land
+# Yourmoov
 
 Production-oriented payment-to-QR flow built with Next.js App Router and TypeScript.
 

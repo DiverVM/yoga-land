@@ -3,7 +3,7 @@ import i18next, { type TOptions } from "i18next";
 const resources = {
   ru: {
     translation: {
-      brand: "Yoga Land",
+      brand: "Yourmoov",
       common: {
         home: "Главная",
         login: "Войти",
@@ -94,10 +94,10 @@ const resources = {
       scan: {
         title: "QR-сканер",
         subtitle:
-          "Наведите камеру на QR-код Yoga Land для автоматического подтверждения или используйте фото, если Safari блокирует камеру по HTTP.",
+          "Наведите камеру на QR-код Yourmoov для автоматического подтверждения или используйте фото, если Safari блокирует камеру по HTTP.",
       },
       scanner: {
-        notYogaQr: "Это не QR-код Yoga Land.",
+        notYogaQr: "Это не QR-код Yourmoov.",
         alreadyDecided: "QR уже был обработан.",
         acceptFailed: "Не удалось подтвердить QR.",
         accepted: "QR успешно подтвержден.",
@@ -121,7 +121,7 @@ const resources = {
       },
       qrActions: {
         copied: "URL QR скопирован в буфер обмена.",
-        pdfTitle: "QR-код Yoga Land",
+        pdfTitle: "QR-код Yourmoov",
         pdfFailed: "Не удалось создать PDF.",
         openedTab: "URL QR открыт в новой вкладке.",
         enterEmail: "Сначала введите email.",
@@ -261,8 +261,8 @@ const resources = {
         noEmailLogs: "Email-логи не найдены.",
       },
       email: {
-        subject: "Ваш QR-код Yoga Land для курса {{course}}",
-        title: "Спасибо за покупку в Yoga Land",
+        subject: "Ваш QR-код Yourmoov для курса {{course}}",
+        title: "Спасибо за покупку в Yourmoov",
         subtitle:
           "Ваша покупка подтверждена. Покажите QR-код ниже при посещении.",
         detailsTitle: "Детали покупки",
@@ -274,7 +274,7 @@ const resources = {
         qrId: "ID QR",
         footer:
           "Сохраните это письмо. В нем содержатся ваш QR-код и данные транзакции.",
-        textIntro: "Спасибо за покупку в Yoga Land.",
+        textIntro: "Спасибо за покупку в Yourmoov.",
         textConfirmed: "Ваша покупка подтверждена.",
         textUseQr: "Используйте QR-код из HTML-версии письма при посещении.",
       },

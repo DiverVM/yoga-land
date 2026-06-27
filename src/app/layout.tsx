@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yoga Land — Оплата и QR",
+  title: "Yourmoov — Оплата и QR",
   description:
-    "Поток оплаты, генерации QR-кода и управления решениями для Yoga Land.",
+    "Поток оплаты, генерации QR-кода и управления решениями для Yourmoov.",
   robots: {
     index: false,
     follow: false,

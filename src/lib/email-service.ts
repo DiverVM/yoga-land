@@ -82,14 +82,14 @@ function buildEmailHtml(input: SendQrEmailInput, qrImageCid: string): string {
   return `
   <div style="font-family: Arial, sans-serif; color: #1c1917; line-height: 1.6; background: #f5f5f4; padding: 24px;">
     <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 20px; padding: 32px; border: 1px solid #e7e5e4;">
-      <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #ea580c;">Yoga Land</p>
+      <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #ea580c;">Yourmoov</p>
       <h2 style="margin: 0 0 12px; font-size: 28px; line-height: 1.2;">${t("email.title")}</h2>
       <p style="margin: 0 0 24px; color: #57534e;">${t("email.subtitle")}</p>
 
       <div style="margin: 0 0 24px; text-align: center;">
         <img
           src="cid:${qrImageCid}"
-          alt="Yoga Land QR code"
+          alt="Yourmoov QR code"
           width="220"
           height="220"
           style="display: inline-block; width: 220px; height: 220px; border-radius: 16px; border: 1px solid #e7e5e4; padding: 12px; background: #ffffff;"
@@ -140,7 +140,7 @@ export async function sendQrEmail(
     const resend = getResendClient();
     const from = getFromEmail();
     const qrDataUrl = await toQrDataUrl(input.qrUrl);
-    const qrImageCid = `qr-${input.qrId}@yoga-land`;
+    const qrImageCid = `qr-${input.qrId}@yourmoov`;
     const qrBase64Content = getBase64ContentFromDataUrl(qrDataUrl);
 
     const result = await resend.emails.send({
@@ -151,7 +151,7 @@ export async function sendQrEmail(
       text: buildEmailText(input),
       attachments: [
         {
-          filename: `yoga-land-qr-${input.qrId}.png`,
+          filename: `yourmoov-qr-${input.qrId}.png`,
           content: qrBase64Content,
           contentType: "image/png",
           contentId: qrImageCid,

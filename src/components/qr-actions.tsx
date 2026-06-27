@@ -145,7 +145,7 @@ export function QrActions({
       // Brand
       ctx.font = "bold 11px Arial, sans-serif";
       ctx.fillStyle = "#ea580c";
-      ctx.fillText("YOGA LAND", PAD, y);
+      ctx.fillText("YOURMOOV", PAD, y);
       y += 28;
 
       // Title
