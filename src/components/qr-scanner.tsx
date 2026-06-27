@@ -17,11 +17,14 @@ type ScanResult = {
   qrId?: string;
 };
 
-/** Extract the QR record ID from a Yourmoov QR URL like `https://…/qr/<id>`. */
+/**
+ * Extract the QR record ID from a Yourmoov QR URL.
+ * Supports both the current `/admin/qr/<id>` route and older `/qr/<id>` links.
+ */
 function extractQrId(text: string): string | null {
   try {
     const { pathname } = new URL(text);
-    const m = pathname.match(/^\/qr\/([^/]+)$/);
+    const m = pathname.match(/^\/(?:admin\/)?qr\/([^/]+)$/);
     return m ? m[1] : null;
   } catch {
     return null;
@@ -312,7 +315,7 @@ export function QrScanner() {
             <div className="mt-1 space-y-1">
               <p className="font-mono text-xs opacity-60">{result.qrId}</p>
               <Link
-                href={`/qr/${result.qrId}`}
+                href={`/admin/qr/${result.qrId}`}
                 className="inline-block text-xs font-semibold underline underline-offset-2"
               >
                 {t("scanner.openQrDetails")}

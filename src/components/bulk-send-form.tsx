@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { t } from "@/i18n";
 import type { Product } from "@/lib/types";
@@ -277,7 +278,18 @@ export function BulkSendForm({ products }: BulkSendFormProps) {
                       {row.transactionId ?? "—"}
                     </td>
                     <td className="py-2 pr-3 font-mono text-xs text-stone-500">
-                      {row.qrId ?? "—"}
+                      {row.qrId ? (
+                        <Link
+                          href={`/admin/qr/${row.qrId}`}
+                          className="text-orange-700 underline decoration-orange-300 underline-offset-2 transition hover:text-orange-900"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {row.qrId}
+                        </Link>
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="py-2 text-stone-600">{row.error ?? "—"}</td>
                   </tr>

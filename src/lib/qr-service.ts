@@ -46,5 +46,5 @@ export async function toQrDataUrl(content: string) {
 }
 
 export function buildQrDetailsUrl(origin: string, qrId: string) {
-  return `${origin}/qr/${qrId}`;
+  return `${origin}/admin/qr/${qrId}`;
 }
