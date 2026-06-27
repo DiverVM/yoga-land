@@ -12,6 +12,11 @@ import { db } from "../src/lib/db";
 import { users } from "../src/lib/db/schema";
 
 async function seed() {
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminPassword) {
+    throw new Error("ADMIN_PASSWORD is required in environment");
+  }
+
   const existing = await db
     .select()
     .from(users)
@@ -23,7 +28,7 @@ async function seed() {
     return;
   }
 
-  const passwordHash = await hashPassword("admin");
+  const passwordHash = await hashPassword(adminPassword);
 
   await db
     .insert(users)
