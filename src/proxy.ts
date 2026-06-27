@@ -9,7 +9,6 @@ const ADMIN_API_PREFIXES = [
   "/api/admin",
   "/api/qr-records",
   "/api/transactions",
-  "/api/email",
 ];
 
 export async function proxy(request: NextRequest) {
@@ -46,6 +45,5 @@ export const config = {
     "/api/admin/:path*",
     "/api/qr-records/:path*",
     "/api/transactions/:path*",
-    "/api/email/:path*",
   ],
 };

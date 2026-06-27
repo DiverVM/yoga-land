@@ -9,6 +9,7 @@ import type { CurrencyCode } from "@/lib/types";
 
 type QrActionsProps = {
   qrId: string;
+  emailToken: string;
   qrUrl: string;
   transactionId: string;
   transactionDate: string;
@@ -81,6 +82,7 @@ function roundedRect(
 
 export function QrActions({
   qrId,
+  emailToken,
   qrUrl,
   transactionId,
   transactionDate,
@@ -238,7 +240,7 @@ export function QrActions({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ qrId, to: email.trim() }),
+        body: JSON.stringify({ qrId, to: email.trim(), token: emailToken }),
       });
 
       const body = (await response.json()) as {

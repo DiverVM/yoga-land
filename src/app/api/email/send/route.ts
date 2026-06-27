@@ -6,11 +6,13 @@ import {
   getQrRecordById,
   getTransactionById,
 } from "@/lib/repositories";
+import { verifyEmailAccessToken } from "@/lib/session";
 import { isEmail } from "@/lib/validation";
 
 type SendEmailBody = {
   qrId?: string;
   to?: string;
+  token?: string;
 };
 
 export async function POST(request: Request) {
@@ -19,7 +21,7 @@ export async function POST(request: Request) {
     return fail("Invalid JSON body", 400);
   }
 
-  if (!body.qrId || !body.to) {
+  if (!body.qrId || !body.to || !body.token) {
     return fail("Validation failed", 400, "qrId and to are required");
   }
 
@@ -27,9 +29,22 @@ export async function POST(request: Request) {
     return fail("Validation failed", 400, "Invalid email address");
   }
 
+  const emailAccess = await verifyEmailAccessToken(body.token);
+  if (!emailAccess) {
+    return fail("Forbidden", 403, "Invalid or expired email token");
+  }
+
+  if (emailAccess.qrId !== body.qrId) {
+    return fail("Forbidden", 403, "Token does not match QR record");
+  }
+
   const qrRecord = await getQrRecordById(body.qrId);
   if (!qrRecord) {
     return fail("QR record not found", 404);
+  }
+
+  if (emailAccess.transactionId !== qrRecord.transactionId) {
+    return fail("Forbidden", 403, "Token does not match transaction");
   }
 
   const transaction = await getTransactionById(qrRecord.transactionId);

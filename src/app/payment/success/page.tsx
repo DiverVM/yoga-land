@@ -7,6 +7,7 @@ import { formatMoney } from "@/lib/format";
 import { finalizePayment } from "@/lib/payment-finalization-service";
 import { getRequestOrigin } from "@/lib/request-origin";
 import { toQrDataUrl } from "@/lib/qr-service";
+import { createEmailAccessToken } from "@/lib/session";
 import {
   getProductById,
   getQrRecordById,
@@ -38,6 +39,7 @@ type PaymentSuccessViewProps = {
   qrRecord: QrRecord;
   qrDataUrl: string;
   productName: string;
+  emailToken: string;
 };
 
 function PaymentPageShell({ children }: PaymentPageShellProps) {
@@ -136,6 +138,7 @@ function PaymentSuccessView({
   qrRecord,
   qrDataUrl,
   productName,
+  emailToken,
 }: PaymentSuccessViewProps) {
   const customerFullName = [transaction.firstName, transaction.lastName]
     .filter((value): value is string => Boolean(value?.trim()))
@@ -185,6 +188,7 @@ function PaymentSuccessView({
           </p>
           <QrActions
             qrId={qrRecord.id}
+            emailToken={emailToken}
             qrUrl={qrRecord.qrUrl}
             transactionId={transaction.id}
             transactionDate={transaction.createdAt}
@@ -297,12 +301,19 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     return <PaymentNotFoundView />;
   }
 
+  const emailToken = await createEmailAccessToken({
+    qrId: qrRecord.id,
+    transactionId: currentTransaction.id,
+    expiresAt: Date.now() + 1000 * 60 * 60,
+  });
+
   return (
     <PaymentSuccessView
       transaction={currentTransaction}
       qrRecord={qrRecord}
       qrDataUrl={qrDataUrl}
       productName={currentProduct.name}
+      emailToken={emailToken}
     />
   );
 }

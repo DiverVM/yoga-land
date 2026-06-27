@@ -15,6 +15,12 @@ export type SessionPayload = {
   expiresAt: number;
 };
 
+export type EmailAccessPayload = {
+  qrId: string;
+  transactionId: string;
+  expiresAt: number;
+};
+
 async function importKey(secret: string): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     "raw",
@@ -83,6 +89,45 @@ export async function verifySessionToken(
     if (!valid) return null;
 
     const payload = JSON.parse(fromBase64url(payloadB64)) as SessionPayload;
+    if (Date.now() > payload.expiresAt) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export async function createEmailAccessToken(
+  payload: EmailAccessPayload,
+): Promise<string> {
+  const payloadB64 = toBase64url(JSON.stringify(payload));
+  const key = await importKey(getSecret());
+  const sig = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(payloadB64),
+  );
+  return `${payloadB64}.${bufferToBase64url(sig)}`;
+}
+
+export async function verifyEmailAccessToken(
+  token: string,
+): Promise<EmailAccessPayload | null> {
+  try {
+    const dotIdx = token.indexOf(".");
+    if (dotIdx === -1) return null;
+    const payloadB64 = token.slice(0, dotIdx);
+    const sigB64 = token.slice(dotIdx + 1);
+
+    const key = await importKey(getSecret());
+    const valid = await crypto.subtle.verify(
+      "HMAC",
+      key,
+      base64urlToBuffer(sigB64),
+      new TextEncoder().encode(payloadB64),
+    );
+    if (!valid) return null;
+
+    const payload = JSON.parse(fromBase64url(payloadB64)) as EmailAccessPayload;
     if (Date.now() > payload.expiresAt) return null;
     return payload;
   } catch {
